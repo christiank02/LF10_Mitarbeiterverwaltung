@@ -33,8 +33,8 @@ entries:
       authentication_flow: !Find [ authentik_flows.flow, [ slug, default-authentication-flow ] ]
       authorization_flow: !Find [ authentik_flows.flow, [ slug, default-provider-authorization-explicit-consent ] ]
       redirect_uris: |
-        http://localhost:5173
-        http://localhost:5173/callback
+        http://localhost:4200
+        http://localhost:4200/callback
       property_mappings:
         - !Find [ authentik_providers_oauth2.scopemapping, [ scope_name, openid ] ]
         - !Find [ authentik_providers_oauth2.scopemapping, [ scope_name, email ] ]
