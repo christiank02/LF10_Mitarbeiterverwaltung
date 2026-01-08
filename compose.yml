@@ -74,7 +74,7 @@ services:
       AUTHENTIK_BOOTSTRAP_EMAIL: a@b.com
       AUTHENTIK_BOOTSTRAP_PASSWORD: secret
     ports:
-      - "9000:9000"
+      - "9001:9000"
       - "9443:9443"
     depends_on:
       postgres-authentik: { condition: service_healthy }
