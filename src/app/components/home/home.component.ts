@@ -53,8 +53,4 @@ export class HomeComponent {
     // TODO: Implement search employee functionality
     console.log('Search employee clicked');
   }
-
-  viewAllEmployees() {
-    this.navigateToEmployees();
-  }
 }
