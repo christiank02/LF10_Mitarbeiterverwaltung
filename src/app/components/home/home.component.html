@@ -1,1 +1,84 @@
-<p>home works!</p>
+<div class="container-fluid p-4">
+  <!-- Dashboard Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-4 fw-bold">DASHBOARD</h1>
+      <p class="lead">Willkommen im Employment Management System.</p>
+    </div>
+  </div>
+
+  <!-- Mitarbeiter Tab -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm clickable-card" (click)="navigateToEmployees()">
+        <div class="card-body">
+          <h5 class="card-title mb-1">
+            <i class="bi bi-people-fill me-2"></i>Mitarbeiter
+          </h5>
+          <p class="card-text text-muted small">Verwalten Sie alle Mitarbeiter.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schnellzugriff Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Schnellzugriff</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <button class="btn btn-outline-primary w-100 py-3" (click)="addNewEmployee()">
+                <i class="bi bi-person-plus-fill d-block mb-2" style="font-size: 2rem;"></i>
+                <span>Neuen Mitarbeiter hinzufügen</span>
+              </button>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-outline-primary w-100 py-3" (click)="searchEmployee()">
+                <i class="bi bi-search d-block mb-2" style="font-size: 2rem;"></i>
+                <span>Mitarbeiter suchen</span>
+              </button>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-outline-primary w-100 py-3" (click)="viewAllEmployees()">
+                <i class="bi bi-list-ul d-block mb-2" style="font-size: 2rem;"></i>
+                <span>Alle Mitarbeiter anzeigen</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Letzte Aktivitäten Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">Letzte Aktivitäten</h5>
+        </div>
+        <div class="card-body">
+          <div class="list-group list-group-flush">
+            @for (activity of activities; track activity.timestamp) {
+              <div class="list-group-item d-flex align-items-start">
+                <div class="avatar-circle me-3">
+                  {{ activity.userInitials }}
+                </div>
+                <div class="flex-grow-1">
+                  <div class="mb-1">
+                    <strong>{{ activity.userName }}</strong> {{ activity.action }}
+                  </div>
+                  <small class="text-muted">{{ activity.timestamp | date: 'dd.MM.yyyy HH:mm' }} Uhr</small>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
