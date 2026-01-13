@@ -19,6 +19,7 @@ export class AuthService {
   };
 
   private configurePromise: Promise<void>;
+  private readonly SESSION_KEY = 'isLoggedIn';
 
   constructor(
     private oauthService: OAuthService,
@@ -66,7 +67,11 @@ export class AuthService {
     try {
       await this.configurePromise;
       await this.oauthService.tryLogin();
-      return this.hasValidToken();
+      const isValid = this.hasValidToken();
+      if (isValid) {
+        sessionStorage.setItem(this.SESSION_KEY, 'true');
+      }
+      return isValid;
     } catch (error) {
       console.error('Fehler beim Login-Callback:', error);
       return false;
@@ -80,10 +85,17 @@ export class AuthService {
 
   public logout() {
     this.oauthService.logOut();
+    sessionStorage.removeItem(this.SESSION_KEY);
   }
 
   public hasValidToken(): boolean {
     return this.oauthService.hasValidAccessToken();
+  }
+
+  public isLoggedIn(): boolean {
+    const sessionLoggedIn = sessionStorage.getItem(this.SESSION_KEY) === 'true';
+    const hasToken = this.hasValidToken();
+    return sessionLoggedIn && hasToken;
   }
 
   public getAccessToken(): string {
