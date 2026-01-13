@@ -93,9 +93,15 @@ export class AuthService {
   }
 
   public isLoggedIn(): boolean {
-    const sessionLoggedIn = sessionStorage.getItem(this.SESSION_KEY) === 'true';
-    const hasToken = this.hasValidToken();
-    return sessionLoggedIn && hasToken;
+    try {
+      const sessionLoggedIn = sessionStorage.getItem(this.SESSION_KEY) === 'true';
+      const hasToken = this.hasValidToken();
+      return sessionLoggedIn && hasToken;
+    } catch (error) {
+      // Handle SessionStorage access errors (e.g., private browsing mode)
+      console.error('SessionStorage access error:', error);
+      return this.hasValidToken();
+    }
   }
 
   public getAccessToken(): string {
