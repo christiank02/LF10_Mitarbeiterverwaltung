@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth/auth.service';
 
 interface Activity {
   userName: string;
@@ -15,7 +16,7 @@ interface Activity {
     templateUrl: './home.component.html',
     styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   activities: Activity[] = [
     {
       userName: 'Anna Bella',
@@ -37,7 +38,17 @@ export class HomeComponent {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    // Redirect to login if not logged in
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+    }
+  }
 
   navigateToEmployees() {
     this.router.navigate(['/employees']);

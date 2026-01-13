@@ -19,7 +19,7 @@ export class TopbarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isLoggedIn = this.authService.hasValidToken();
+    this.isLoggedIn = this.authService.isLoggedIn();
   }
 
   @HostListener('document:click', ['$event'])
