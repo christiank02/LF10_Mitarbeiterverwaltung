@@ -18,6 +18,7 @@ interface QualificationDetailsResponse {
 
 @Component({
   selector: 'app-qualification-details',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './qualification-details.component.html',
   styleUrl: './qualification-details.component.css'
@@ -43,7 +44,7 @@ export class QualificationDetailsComponent implements OnInit {
 
   fetchQualificationDetails() {
     const token = this.authService.getAccessToken();
-    this.http.get<QualificationDetailsResponse>(`http://localhost:8089/qualifications/${this.qualificationId}`, {
+    this.http.get<QualificationDetailsResponse>(`http://localhost:8089/qualifications/${this.qualificationId}/employees`, {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/json')
         .set('Authorization', `Bearer ${token}`)

@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { Observable, of } from "rxjs";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Employee, Skill } from "../Employee";
-import { AuthService } from "../services/auth/auth.service";
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {Router, RouterLink} from '@angular/router';
+import {Observable, of} from "rxjs";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Employee, Skill} from "../Employee";
+import {AuthService} from "../services/auth/auth.service";
 
 @Component({
     selector: 'app-employee-list',
+    standalone: true,
     imports: [CommonModule, FormsModule, RouterLink],
     templateUrl: './employee-list.component.html',
     styleUrl: './employee-list.component.css'
@@ -18,17 +19,17 @@ export class EmployeeListComponent implements OnInit {
   allEmployees: Employee[] = [];
   filteredEmployees: Employee[] = [];
   paginatedEmployees: Employee[] = [];
-  
+
   // Pagination
   currentPage = 1;
   itemsPerPage = 10;
   totalItems = 0;
-  
+
   // Filters
   searchTerm = '';
   selectedDepartment = '';
   selectedRole = '';
-  
+
   departments: string[] = ['IT', 'HR', 'Sales', 'Marketing', 'Finance'];
   roles: string[] = ['Developer', 'Manager', 'Analyst', 'Designer', 'Consultant'];
 
@@ -56,7 +57,7 @@ export class EmployeeListComponent implements OnInit {
         .set('Content-Type', 'application/json')
         .set('Authorization', `Bearer ${token}`)
     });
-    
+
     this.employees$.subscribe(employees => {
       this.allEmployees = employees;
       this.applyFilters();
@@ -65,14 +66,12 @@ export class EmployeeListComponent implements OnInit {
 
   applyFilters() {
     this.filteredEmployees = this.allEmployees.filter(emp => {
-      const matchesSearch = !this.searchTerm || 
+      // For now, we'll just use search filter since Employee interface doesn't have department/role
+      return !this.searchTerm ||
         emp.firstName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         emp.lastName?.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
-      // For now, we'll just use search filter since Employee interface doesn't have department/role
-      return matchesSearch;
     });
-    
+
     this.totalItems = this.filteredEmployees.length;
     this.updatePagination();
   }
@@ -117,11 +116,11 @@ export class EmployeeListComponent implements OnInit {
     const maxPages = 5;
     let startPage = Math.max(1, this.currentPage - 2);
     let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
-    
+
     if (endPage - startPage < maxPages - 1) {
       startPage = Math.max(1, endPage - maxPages + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
@@ -163,14 +162,14 @@ export class EmployeeListComponent implements OnInit {
 
   addSkill() {
     if (!this.newSkill.trim() || !this.selectedEmployee) return;
-    
+
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
     // TODO: Replace with actual API endpoint
-    this.http.post(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications`, 
+    this.http.post(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications`,
       { skill: this.newSkill.trim() },
       { headers }
     ).subscribe({
@@ -189,7 +188,7 @@ export class EmployeeListComponent implements OnInit {
 
   deleteSkill(skill: Skill) {
     if (!this.selectedEmployee) return;
-    
+
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')

@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
+    standalone: true,
     imports: [CommonModule, RouterOutlet, TopbarComponent],
     templateUrl: './app.component.html',
     styleUrl: './app.component.css'

@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-topbar',
+  standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.css'
@@ -26,7 +27,7 @@ export class TopbarComponent implements OnInit {
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const clickedInside = target.closest('.profile-dropdown');
-    
+
     if (!clickedInside && this.showProfileMenu) {
       this.showProfileMenu = false;
     }

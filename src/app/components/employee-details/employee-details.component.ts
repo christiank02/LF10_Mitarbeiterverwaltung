@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-employee-details',
+  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './employee-details.component.html',
   styleUrl: './employee-details.component.css'
@@ -15,7 +16,7 @@ import { AuthService } from '../../services/auth/auth.service';
 export class EmployeeDetailsComponent implements OnInit {
   employee: Employee | null = null;
   employeeId: string | null = null;
-  
+
   // Skills modal
   showSkillsModal = false;
   newSkill = '';
@@ -80,13 +81,13 @@ export class EmployeeDetailsComponent implements OnInit {
 
   addSkill() {
     if (!this.newSkill.trim() || !this.employee) return;
-    
+
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    this.http.post(`http://localhost:8089/employees/${this.employee.id}/qualifications`, 
+    this.http.post(`http://localhost:8089/employees/${this.employee.id}/qualifications`,
       { skill: this.newSkill.trim() },
       { headers }
     ).subscribe({
@@ -100,7 +101,7 @@ export class EmployeeDetailsComponent implements OnInit {
 
   deleteSkill(skill: Skill) {
     if (!this.employee) return;
-    
+
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
@@ -122,7 +123,7 @@ export class EmployeeDetailsComponent implements OnInit {
 
   deleteEmployee() {
     if (!confirm('Are you sure you want to delete this employee?')) return;
-    
+
     const token = this.authService.getAccessToken();
     this.http.delete(`http://localhost:8089/employees/${this.employeeId}`, {
       headers: new HttpHeaders()

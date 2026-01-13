@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-qualifications',
+  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './qualifications.component.html',
   styleUrl: './qualifications.component.css'
@@ -16,20 +17,20 @@ export class QualificationsComponent implements OnInit {
   qualifications: Qualification[] = [];
   filteredQualifications: Qualification[] = [];
   paginatedQualifications: Qualification[] = [];
-  
+
   // Pagination
   currentPage = 1;
   itemsPerPage = 10;
   totalItems = 0;
-  
+
   // Search
   searchTerm = '';
-  
+
   // Modal
   showModal = false;
   isEditMode = false;
   currentQualification: Qualification = { skill: '' };
-  
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
@@ -59,7 +60,7 @@ export class QualificationsComponent implements OnInit {
     this.filteredQualifications = this.qualifications.filter(q =>
       !this.searchTerm || q.skill.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
-    
+
     this.totalItems = this.filteredQualifications.length;
     this.updatePagination();
   }
@@ -104,11 +105,11 @@ export class QualificationsComponent implements OnInit {
     const maxPages = 5;
     let startPage = Math.max(1, this.currentPage - 2);
     let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
-    
+
     if (endPage - startPage < maxPages - 1) {
       startPage = Math.max(1, endPage - maxPages + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
@@ -142,8 +143,8 @@ export class QualificationsComponent implements OnInit {
 
     if (this.isEditMode) {
       // Update qualification
-      this.http.put(`http://localhost:8089/qualifications/${this.currentQualification.id}`, 
-        this.currentQualification, 
+      this.http.put(`http://localhost:8089/qualifications/${this.currentQualification.id}`,
+        this.currentQualification,
         { headers }
       ).subscribe({
         next: () => {
@@ -154,8 +155,8 @@ export class QualificationsComponent implements OnInit {
       });
     } else {
       // Add new qualification
-      this.http.post('http://localhost:8089/qualifications', 
-        this.currentQualification, 
+      this.http.post('http://localhost:8089/qualifications',
+        this.currentQualification,
         { headers }
       ).subscribe({
         next: () => {
