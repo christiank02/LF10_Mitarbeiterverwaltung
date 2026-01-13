@@ -1,0 +1,55 @@
+<nav class="topbar">
+  <div class="topbar-container">
+    <!-- Left Section: Logo + Navigation -->
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="topbar-nav">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+          Dashboard
+        </a>
+        <a routerLink="/employees" routerLinkActive="active" class="nav-link">
+          Employees
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Section: Notifications, Profile, Login/Logout -->
+    <div class="topbar-right">
+      @if (isLoggedIn) {
+        <!-- Notification Bell -->
+        <button class="topbar-icon-btn" title="Benachrichtigungen">
+          <i class="bi bi-bell"></i>
+        </button>
+
+        <!-- Profile Menu -->
+        <div class="profile-dropdown">
+          <button class="topbar-icon-btn" (click)="toggleProfileMenu()" title="Profil">
+            <i class="bi bi-person-circle"></i>
+          </button>
+          @if (showProfileMenu) {
+            <div class="dropdown-menu">
+              <button class="dropdown-item" (click)="goToSettings()">
+                <i class="bi bi-gear"></i>
+                Einstellungen
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Logout Button -->
+        <button class="topbar-btn" (click)="logout()" title="Abmelden">
+          <i class="bi bi-box-arrow-right"></i>
+          Abmelden
+        </button>
+      } @else {
+        <!-- Login Button -->
+        <button class="topbar-btn" (click)="login()" title="Anmelden">
+          <i class="bi bi-box-arrow-in-right"></i>
+          Anmelden
+        </button>
+      }
+    </div>
+  </div>
+</nav>
