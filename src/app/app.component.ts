@@ -17,8 +17,8 @@ export class AppComponent {
   constructor(private router: Router) {
     // Hide topbar on login page
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
       this.showTopbar = !event.url.includes('/login');
     });
   }

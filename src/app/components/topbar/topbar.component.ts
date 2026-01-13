@@ -53,7 +53,6 @@ export class TopbarComponent implements OnInit {
 
   goToSettings() {
     // TODO: Navigate to settings page when implemented
-    console.log('Navigate to settings');
     this.closeProfileMenu();
   }
 }
