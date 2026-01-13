@@ -38,8 +38,6 @@
               <thead class="table-light">
                 <tr>
                   <th>Employee</th>
-                  <th>Contact</th>
-                  <th>Location</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -56,8 +54,6 @@
                         </div>
                       </div>
                     </td>
-                    <td class="align-middle">{{ employee.phone || '-' }}</td>
-                    <td class="align-middle">{{ employee.city || '-' }}</td>
                     <td class="align-middle">
                       <button class="btn btn-sm btn-outline-primary" (click)="viewEmployee(employee); $event.stopPropagation()">
                         <i class="bi bi-eye me-1"></i>View Details
