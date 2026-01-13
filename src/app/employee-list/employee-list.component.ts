@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Observable, of } from "rxjs";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Employee } from "../Employee";
+import { Employee, Skill } from "../Employee";
 import { AuthService } from "../services/auth/auth.service";
 
 @Component({
@@ -31,6 +31,11 @@ export class EmployeeListComponent implements OnInit {
   
   departments: string[] = ['IT', 'HR', 'Sales', 'Marketing', 'Finance'];
   roles: string[] = ['Developer', 'Manager', 'Analyst', 'Designer', 'Consultant'];
+
+  // Skills modal
+  showSkillsModal = false;
+  selectedEmployee: Employee | null = null;
+  newSkill = '';
 
   constructor(
     private http: HttpClient,
@@ -142,5 +147,77 @@ export class EmployeeListComponent implements OnInit {
     const first = employee.firstName?.charAt(0) || '';
     const last = employee.lastName?.charAt(0) || '';
     return (first + last).toUpperCase();
+  }
+
+  // Skills management
+  viewSkills(employee: Employee) {
+    this.selectedEmployee = employee;
+    this.showSkillsModal = true;
+  }
+
+  closeSkillsModal() {
+    this.showSkillsModal = false;
+    this.selectedEmployee = null;
+    this.newSkill = '';
+  }
+
+  addSkill() {
+    if (!this.newSkill.trim() || !this.selectedEmployee) return;
+    
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    // TODO: Replace with actual API endpoint
+    this.http.post(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications`, 
+      { skill: this.newSkill.trim() },
+      { headers }
+    ).subscribe({
+      next: () => {
+        if (this.selectedEmployee) {
+          if (!this.selectedEmployee.skillSet) {
+            this.selectedEmployee.skillSet = [];
+          }
+          this.selectedEmployee.skillSet.push({ skill: this.newSkill.trim() });
+          this.newSkill = '';
+        }
+      },
+      error: (err) => console.error('Error adding skill:', err)
+    });
+  }
+
+  deleteSkill(skill: Skill) {
+    if (!this.selectedEmployee) return;
+    
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    // TODO: Replace with actual API endpoint
+    this.http.delete(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications`, {
+      headers,
+      body: { skill: skill.skill }
+    }).subscribe({
+      next: () => {
+        if (this.selectedEmployee && this.selectedEmployee.skillSet) {
+          this.selectedEmployee.skillSet = this.selectedEmployee.skillSet.filter(s => s.skill !== skill.skill);
+        }
+      },
+      error: (err) => console.error('Error deleting skill:', err)
+    });
+  }
+
+  getSkillsDisplay(employee: Employee): string {
+    if (!employee.skillSet || employee.skillSet.length === 0) {
+      return '-';
+    }
+    const skills = employee.skillSet.map(s => s.skill).slice(0, 2).join(', ');
+    return employee.skillSet.length > 2 ? `${skills} +${employee.skillSet.length - 2}` : skills;
+  }
+
+  viewEmployeeDetails(employee: Employee) {
+    this.router.navigate(['/employees', employee.id]);
   }
 }

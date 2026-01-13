@@ -1,0 +1,75 @@
+<div class="container-fluid p-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+      <li class="breadcrumb-item"><a routerLink="/qualifications">Qualifications</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ qualification?.skill || 'Details' }}</li>
+    </ol>
+  </nav>
+
+  @if (qualification) {
+    <!-- Qualification Header -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <div class="qualification-icon me-4">
+            <i class="bi bi-award-fill"></i>
+          </div>
+          <div>
+            <h1 class="h2 mb-1">{{ qualification.skill }}</h1>
+            <p class="text-muted mb-0">Qualification ID: {{ qualification.id }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employees with this Qualification -->
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Employees with this Qualification ({{ employees.length }})</h5>
+      </div>
+      <div class="card-body">
+        @if (employees.length === 0) {
+          <p class="text-muted text-center py-4">No employees have this qualification yet</p>
+        } @else {
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Employee</th>
+                  <th>Contact</th>
+                  <th>Location</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (employee of employees; track employee.id) {
+                  <tr class="clickable-row" (click)="viewEmployee(employee)">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-circle me-3">
+                          {{ getInitials(employee) }}
+                        </div>
+                        <div>
+                          <div class="fw-semibold">{{ employee.firstName }} {{ employee.lastName }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="align-middle">{{ employee.phone || '-' }}</td>
+                    <td class="align-middle">{{ employee.city || '-' }}</td>
+                    <td class="align-middle">
+                      <button class="btn btn-sm btn-outline-primary" (click)="viewEmployee(employee); $event.stopPropagation()">
+                        <i class="bi bi-eye me-1"></i>View Details
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -76,19 +76,20 @@
             <th>Employee</th>
             <th>Department</th>
             <th>Role</th>
+            <th>Skills</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           @if (paginatedEmployees.length === 0) {
             <tr>
-              <td colspan="4" class="text-center py-4 text-muted">
+              <td colspan="5" class="text-center py-4 text-muted">
                 No employees found
               </td>
             </tr>
           }
           @for (employee of paginatedEmployees; track employee.id) {
-            <tr>
+            <tr class="clickable-row" (click)="viewEmployeeDetails(employee)">
               <td>
                 <div class="d-flex align-items-center">
                   <div class="avatar-circle me-3">
@@ -103,10 +104,15 @@
               <td class="align-middle">{{ employee.city || '-' }}</td>
               <td class="align-middle">{{ employee.postcode || '-' }}</td>
               <td class="align-middle">
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="editEmployee(employee)">
+                <button class="btn btn-sm btn-outline-info" (click)="viewSkills(employee); $event.stopPropagation()">
+                  <i class="bi bi-award me-1"></i>{{ getSkillsDisplay(employee) }}
+                </button>
+              </td>
+              <td class="align-middle">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editEmployee(employee); $event.stopPropagation()">
                   <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteEmployee(employee)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteEmployee(employee); $event.stopPropagation()">
                   <i class="bi bi-trash"></i>
                 </button>
               </td>
@@ -143,3 +149,58 @@
     </nav>
   </div>
 </div>
+
+<!-- Skills Modal -->
+@if (showSkillsModal && selectedEmployee) {
+  <div class="modal-backdrop" (click)="closeSkillsModal()"></div>
+  <div class="modal-dialog-custom">
+    <div class="modal-content-custom">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-award me-2"></i>Skills - {{ selectedEmployee.firstName }} {{ selectedEmployee.lastName }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeSkillsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Add New Skill -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Add New Skill</label>
+          <div class="input-group">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Enter skill name..." 
+              [(ngModel)]="newSkill"
+              (keyup.enter)="addSkill()"
+            />
+            <button class="btn btn-primary" (click)="addSkill()" [disabled]="!newSkill.trim()">
+              <i class="bi bi-plus-lg me-1"></i>Add
+            </button>
+          </div>
+        </div>
+
+        <!-- Skills List -->
+        <div>
+          <label class="form-label fw-semibold">Current Skills</label>
+          @if (!selectedEmployee.skillSet || selectedEmployee.skillSet.length === 0) {
+            <p class="text-muted text-center py-3">No skills added yet</p>
+          } @else {
+            <div class="skills-list">
+              @for (skill of selectedEmployee.skillSet; track skill.skill) {
+                <div class="skill-badge">
+                  <span>{{ skill.skill }}</span>
+                  <button class="btn-remove" (click)="deleteSkill(skill)" title="Remove skill">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeSkillsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+}

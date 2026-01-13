@@ -1,0 +1,154 @@
+<div class="container-fluid p-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+      <li class="breadcrumb-item"><a routerLink="/employees">Employees</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ employee?.firstName }} {{ employee?.lastName }}</li>
+    </ol>
+  </nav>
+
+  @if (employee) {
+    <!-- Employee Header Card -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="d-flex align-items-center">
+            <div class="avatar-circle-large me-4">
+              {{ getInitials() }}
+            </div>
+            <div>
+              <h1 class="h2 mb-1">{{ employee.firstName }} {{ employee.lastName }}</h1>
+              <p class="text-muted mb-0">Employee ID: {{ employee.id }}</p>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-outline-primary me-2" (click)="editEmployee()">
+              <i class="bi bi-pencil me-1"></i>Edit
+            </button>
+            <button class="btn btn-outline-danger" (click)="deleteEmployee()">
+              <i class="bi bi-trash me-1"></i>Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employee Information Grid -->
+    <div class="row mb-4">
+      <!-- Contact Information -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-person-vcard me-2"></i>Contact Information</h5>
+          </div>
+          <div class="card-body">
+            <div class="info-item">
+              <i class="bi bi-telephone-fill text-primary me-2"></i>
+              <span class="fw-semibold">Phone:</span>
+              <span class="ms-2">{{ employee.phone || 'Not provided' }}</span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+              <span class="fw-semibold">Address:</span>
+              <span class="ms-2">
+                {{ employee.street || '-' }}, {{ employee.postcode || '-' }} {{ employee.city || '-' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills/Qualifications -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-award me-2"></i>Qualifications</h5>
+            <button class="btn btn-sm btn-light" (click)="openSkillsModal()">
+              <i class="bi bi-plus-lg me-1"></i>Add
+            </button>
+          </div>
+          <div class="card-body">
+            @if (!employee.skillSet || employee.skillSet.length === 0) {
+              <p class="text-muted text-center py-3">No qualifications added yet</p>
+            } @else {
+              <div class="skills-list">
+                @for (skill of employee.skillSet; track skill.skill) {
+                  <div class="skill-badge">
+                    <span>{{ skill.skill }}</span>
+                    <button class="btn-remove" (click)="deleteSkill(skill)" title="Remove skill">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Details -->
+    <div class="card">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Additional Information</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="info-item">
+              <span class="fw-semibold">First Name:</span>
+              <span class="ms-2">{{ employee.firstName }}</span>
+            </div>
+            <div class="info-item">
+              <span class="fw-semibold">Last Name:</span>
+              <span class="ms-2">{{ employee.lastName }}</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-item">
+              <span class="fw-semibold">City:</span>
+              <span class="ms-2">{{ employee.city || 'Not provided' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="fw-semibold">Postcode:</span>
+              <span class="ms-2">{{ employee.postcode || 'Not provided' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Skills Modal -->
+@if (showSkillsModal && employee) {
+  <div class="modal-backdrop" (click)="closeSkillsModal()"></div>
+  <div class="modal-dialog-custom">
+    <div class="modal-content-custom">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-award me-2"></i>Add Qualification
+        </h5>
+        <button type="button" class="btn-close" (click)="closeSkillsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Select Qualification</label>
+          <select class="form-select" [(ngModel)]="newSkill">
+            <option value="">Choose a qualification...</option>
+            @for (skill of availableSkills; track skill) {
+              <option [value]="skill">{{ skill }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeSkillsModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addSkill(); closeSkillsModal()" [disabled]="!newSkill">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+}
