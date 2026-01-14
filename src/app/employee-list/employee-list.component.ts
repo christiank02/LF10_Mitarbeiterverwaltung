@@ -74,10 +74,12 @@ export class EmployeeListComponent implements OnInit {
 
   applyFilters() {
     this.filteredEmployees = this.allEmployees.filter(emp => {
-      // For now, we'll just use search filter since Employee interface doesn't have department/role
+      const firstName = emp.firstName?.toLowerCase() || '';
+      const lastName = emp.lastName?.toLowerCase() || '';
+      const fullName = (firstName + ' ' + lastName).toLowerCase();
+
       return !this.searchTerm ||
-        emp.firstName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.lastName?.toLowerCase().includes(this.searchTerm.toLowerCase());
+        fullName.includes(this.searchTerm.toLowerCase());
     });
 
     this.totalItems = this.filteredEmployees.length;
@@ -322,7 +324,7 @@ export class EmployeeListComponent implements OnInit {
     if (!this.selectedEmployee.skillSet) {
       this.selectedEmployee.skillSet = [];
     }
-    
+
     // Check if skill is not already in the list
     const alreadyExists = this.selectedEmployee.skillSet.some(s => s.skill === this.newSkill.trim());
     if (!alreadyExists) {
