@@ -293,6 +293,7 @@ export class EmployeeListComponent implements OnInit {
   // Skills management
   viewSkills(employee: Employee) {
     this.selectedEmployee = employee;
+    this.fetchAvailableQualifications();
     this.showSkillsModal = true;
   }
 
@@ -310,9 +311,16 @@ export class EmployeeListComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    // TODO: Replace with actual API endpoint
-    this.http.post(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications`,
-      { skill: this.newSkill.trim() },
+    // Find the qualification ID
+    const qualification = this.availableQualifications.find(q => q.skill === this.newSkill.trim());
+    if (!qualification || !qualification.id) {
+      console.error('Qualification not found');
+      return;
+    }
+
+    // Send qualification ID to API
+    this.http.post(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications/${qualification.id}`,
+      {},
       { headers }
     ).subscribe({
       next: () => {
@@ -320,30 +328,35 @@ export class EmployeeListComponent implements OnInit {
           if (!this.selectedEmployee.skillSet) {
             this.selectedEmployee.skillSet = [];
           }
-          this.selectedEmployee.skillSet.push({ skill: this.newSkill.trim() });
+          this.selectedEmployee.skillSet.push({ skill: this.newSkill.trim(), id: qualification.id });
           this.newSkill = '';
+          this.fetchData(); // Refresh to get updated data
         }
       },
       error: (err) => console.error('Error adding skill:', err)
     });
   }
 
+  isSkillAlreadyAdded(skillName: string): boolean {
+    return this.selectedEmployee?.skillSet?.some(skill => skill.skill === skillName) || false;
+  }
+
   deleteSkill(skill: Skill) {
-    if (!this.selectedEmployee) return;
+    if (!this.selectedEmployee || !skill.id) return;
 
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    // TODO: Replace with actual API endpoint
-    this.http.delete(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications`, {
-      headers,
-      body: { skill: skill.skill }
+    // Delete using qualification ID
+    this.http.delete(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications/${skill.id}`, {
+      headers
     }).subscribe({
       next: () => {
         if (this.selectedEmployee && this.selectedEmployee.skillSet) {
           this.selectedEmployee.skillSet = this.selectedEmployee.skillSet.filter(s => s.skill !== skill.skill);
+          this.fetchData(); // Refresh to get updated data
         }
       },
       error: (err) => console.error('Error deleting skill:', err)

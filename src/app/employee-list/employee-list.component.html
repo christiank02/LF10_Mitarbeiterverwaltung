@@ -155,18 +155,25 @@
       <div class="modal-body">
         <div class="mb-4">
           <label class="form-label fw-semibold">Neue Kompetenz hinzufügen</label>
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Kompetenznamen eingeben..."
-              [(ngModel)]="newSkill"
-              (keyup.enter)="addSkill()"
-            />
-            <button class="btn btn-primary" (click)="addSkill()" [disabled]="!newSkill.trim()">
-              <i class="bi bi-plus-lg me-1"></i>Hinzufügen
-            </button>
-          </div>
+          @if (availableQualifications.length === 0) {
+            <p class="text-muted">Loading qualifications...</p>
+          } @else {
+            <div class="input-group">
+              <select
+                class="form-select"
+                [(ngModel)]="newSkill"
+                (change)="addSkill()"
+              >
+                <option value="">-- Select a qualification to add --</option>
+                @for (qualification of availableQualifications; track qualification.id) {
+                  @if (!isSkillAlreadyAdded(qualification.skill)) {
+                    <option [value]="qualification.skill">{{ qualification.skill }}</option>
+                  }
+                }
+              </select>
+            </div>
+            <small class="text-muted d-block mt-1">Only qualifications from the master list can be added</small>
+          }
         </div>
 
         <div>
