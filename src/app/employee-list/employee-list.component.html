@@ -10,7 +10,7 @@
   <!-- Header with Title and Add Button -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h2 mb-0">Employees</h1>
-    <button class="btn btn-primary" (click)="openAddModal()">
+    <button class="btn btn-primary" (click)="addEmployee()">
       <i class="bi bi-person-plus me-2"></i>Add Employee
     </button>
   </div>
@@ -204,43 +204,135 @@
   </div>
 }
 
-@if (showModal) {
-  <div class="modal-backdrop" (click)="closeModal()"></div>
-  <div class="modal-dialog-custom">
+<!-- Add Employee Modal -->
+@if (showAddEmployeeModal) {
+  <div class="modal-backdrop" (click)="closeAddEmployeeModal()"></div>
+  <div class="modal-dialog-custom modal-lg">
     <div class="modal-content-custom">
       <div class="modal-header">
         <h5 class="modal-title">
-          <i class="bi bi-award me-2"></i>{{ isEditMode ? 'Edit' : 'Add' }} Employee
+          <i class="bi bi-person-plus me-2"></i>Add New Employee
         </h5>
-        <button type="button" class="btn-close" (click)="closeModal()"></button>
+        <button type="button" class="btn-close" (click)="closeAddEmployeeModal()"></button>
       </div>
       <div class="modal-body">
-        <div class="row">
-          <div class="col-md-6 mb-2">
-            <label class="form-label fw-semibold">First Name</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter first name..."
-              [(ngModel)]="currentEmployee.firstName"
-              (keyup.enter)="saveEmployee()"
-              autofocus
-            />
-          </div>
-          <div class="col-md-6 mb-2">
-            <label class="form-label fw-semibold">Last Name</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter last name..."
-              [(ngModel)]="currentEmployee.lastName"
-              (keyup.enter)="saveEmployee()"
-            />
+        <!-- Personal Information -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">Personal Information</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter first name..."
+                [(ngModel)]="currentEmployee.firstName"
+                autofocus
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter last name..."
+                [(ngModel)]="currentEmployee.lastName"
+              />
+            </div>
           </div>
         </div>
+
+        <!-- Contact Information -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">Contact Information</h6>
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">Phone</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter phone number..."
+                [(ngModel)]="currentEmployee.phone"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Information -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">Address</h6>
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">Street</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter street address..."
+                [(ngModel)]="currentEmployee.street"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Postcode</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter postcode..."
+                [(ngModel)]="currentEmployee.postcode"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">City</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter city..."
+                [(ngModel)]="currentEmployee.city"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Qualifications (Multi-select) -->
+        <div class="mb-3">
+          <h6 class="text-primary mb-3">Qualifications</h6>
+          <div class="qualifications-multiselect">
+            @if (availableQualifications.length === 0) {
+              <p class="text-muted">Loading qualifications...</p>
+            } @else {
+              <div class="row g-2">
+                @for (qualification of availableQualifications; track qualification.id) {
+                  <div class="col-md-6">
+                    <div class="form-check qualification-checkbox">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        [id]="'qual-' + qualification.id"
+                        [checked]="isQualificationSelected(qualification.skill)"
+                        (change)="toggleQualification(qualification.skill)"
+                      />
+                      <label class="form-check-label" [for]="'qual-' + qualification.id">
+                        {{ qualification.skill }}
+                      </label>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          <small class="text-muted">Select all qualifications that apply to this employee</small>
+        </div>
       </div>
-
-
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddEmployeeModal()">Cancel</button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="saveNewEmployee()" 
+          [disabled]="!currentEmployee.firstName?.trim() || !currentEmployee.lastName?.trim()"
+        >
+          <i class="bi bi-check-lg me-1"></i>Add Employee
+        </button>
+      </div>
     </div>
   </div>
 }

@@ -99,10 +99,17 @@
   animation: slideDown 0.3s ease-out;
 }
 
+.modal-dialog-custom.modal-lg {
+  max-width: 800px;
+}
+
 .modal-content-custom {
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -111,6 +118,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .modal-title {
@@ -149,6 +157,7 @@
   padding: 1.5rem;
   max-height: 60vh;
   overflow-y: auto;
+  flex-grow: 1;
 }
 
 .modal-footer {
@@ -156,6 +165,8 @@
   border-top: 1px solid #dee2e6;
   display: flex;
   justify-content: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .skills-list {
@@ -194,6 +205,39 @@
 .skill-badge .btn-remove:hover {
   background-color: #007bff;
   color: white;
+}
+
+/* Add Employee Modal Specific Styles */
+.qualifications-multiselect {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.qualification-checkbox {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+}
+
+.qualification-checkbox:hover {
+  background-color: #e9ecef;
+}
+
+.qualification-checkbox .form-check-input {
+  cursor: pointer;
+}
+
+.qualification-checkbox .form-check-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+.text-danger {
+  color: #dc3545;
 }
 
 @keyframes fadeIn {

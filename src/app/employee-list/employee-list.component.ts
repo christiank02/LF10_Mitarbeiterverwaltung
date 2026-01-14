@@ -32,13 +32,17 @@ export class EmployeeListComponent implements OnInit {
   departments: string[] = ['IT', 'HR', 'Sales', 'Marketing', 'Finance'];
   roles: string[] = ['Developer', 'Manager', 'Analyst', 'Designer', 'Consultant'];
 
+  // Skills modal
   showSkillsModal = false;
   selectedEmployee: Employee | null = null;
   newSkill = '';
 
-  showModal = false;
+  // Add/Edit Employee Modal
+  showAddEmployeeModal = false;
   isEditMode = false;
-  currentEmployee: Employee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '' };
+  currentEmployee: Employee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
+  availableQualifications: Qualification[] = [];
+  selectedQualifications: string[] = [];
 
 
   constructor(
@@ -130,70 +134,87 @@ export class EmployeeListComponent implements OnInit {
     return pages;
   }
 
-  openAddModal() {
-    this.isEditMode = false;
-    this.currentEmployee = { firstName: '', lastName: '' , city: '', street: '', postcode: '', phone: '' };
-    this.showModal = true;
-  }
-
-  openEditModal(employee: Employee) {
-    this.isEditMode = true;
-    this.currentEmployee = { ...employee };
-    this.showModal = true;
-  }
-
-  closeModal() {
-    this.showModal = false;
-    this.currentEmployee = { firstName: '', lastName: '' , city: '', street: '', postcode: '', phone: '' };
-  }
-
-  saveEmployee() {
-    if (!this.currentEmployee.firstName?.trim()) return;
-
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
-
-    if (this.isEditMode) {
-      // Update qualification
-      this.http.put(`http://localhost:8089/employees/${this.currentEmployee.id}`,
-        this.currentEmployee,
-        { headers }
-      ).subscribe({
-        next: () => {
-          this.fetchData();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error updating qualification:', err)
-      });
-    } else {
-      this.http.post('http://localhost:8089/employees',
-        this.currentEmployee,
-        { headers }
-      ).subscribe({
-        next: () => {
-          this.fetchData();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error adding qualification:', err)
-      });
-    }
-  }
-
   editEmployee(employee: Employee) {
     // TODO: Implement edit functionality
     console.log('Edit employee:', employee);
   }
 
   deleteEmployee(employee: Employee) {
-    // TODO: Implement delete functionality
-    console.log('Delete employee:', employee);
+    if (!confirm(`Are you sure you want to delete ${employee.firstName} ${employee.lastName}?`)) return;
+    
+    const token = this.authService.getAccessToken();
+    this.http.delete(`http://localhost:8089/employees/${employee.id}`, {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
+    }).subscribe({
+      next: () => this.fetchData(),
+      error: (err) => console.error('Error deleting employee:', err)
+    });
   }
 
   addEmployee() {
-    // TODO: Navigate to add employee page
-    console.log('Add employee');
+    this.isEditMode = false;
+    this.currentEmployee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
+    this.selectedQualifications = [];
+    this.fetchAvailableQualifications();
+    this.showAddEmployeeModal = true;
+  }
+
+  fetchAvailableQualifications() {
+    const token = this.authService.getAccessToken();
+    this.http.get<Qualification[]>('http://localhost:8089/qualifications', {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
+    }).subscribe({
+      next: (data) => {
+        this.availableQualifications = data;
+      },
+      error: (err) => console.error('Error fetching qualifications:', err)
+    });
+  }
+
+  closeAddEmployeeModal() {
+    this.showAddEmployeeModal = false;
+    this.currentEmployee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
+    this.selectedQualifications = [];
+  }
+
+  toggleQualification(skillName: string) {
+    const index = this.selectedQualifications.indexOf(skillName);
+    if (index > -1) {
+      this.selectedQualifications.splice(index, 1);
+    } else {
+      this.selectedQualifications.push(skillName);
+    }
+  }
+
+  isQualificationSelected(skillName: string): boolean {
+    return this.selectedQualifications.includes(skillName);
+  }
+
+  saveNewEmployee() {
+    if (!this.currentEmployee.firstName?.trim() || !this.currentEmployee.lastName?.trim()) {
+      alert('Please fill in at least first name and last name');
+      return;
+    }
+
+    // Build skillSet from selected qualifications
+    this.currentEmployee.skillSet = this.selectedQualifications.map(skill => ({ skill }));
+
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    this.http.post('http://localhost:8089/employees', this.currentEmployee, { headers }).subscribe({
+      next: () => {
+        this.fetchData();
+        this.closeAddEmployeeModal();
+      },
+      error: (err) => console.error('Error adding employee:', err)
+    });
   }
 
   getInitials(employee: Employee): string {
