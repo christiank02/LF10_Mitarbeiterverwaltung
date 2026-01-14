@@ -242,22 +242,6 @@
           </div>
         </div>
 
-        <!-- Contact Information -->
-        <div class="mb-4">
-          <h6 class="text-primary mb-3">Contact Information</h6>
-          <div class="row g-3">
-            <div class="col-md-12">
-              <label class="form-label fw-semibold">Phone</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter phone number..."
-                [(ngModel)]="currentEmployee.phone"
-              />
-            </div>
-          </div>
-        </div>
-
         <!-- Address Information -->
         <div class="mb-4">
           <h6 class="text-primary mb-3">Address</h6>
@@ -292,34 +276,68 @@
           </div>
         </div>
 
-        <!-- Qualifications (Multi-select) -->
+        <!-- Contact Information -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">Contact Information</h6>
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">Phone</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter phone number..."
+                [(ngModel)]="currentEmployee.phone"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Qualifications (Dropdown) -->
         <div class="mb-3">
           <h6 class="text-primary mb-3">Qualifications</h6>
-          <div class="qualifications-multiselect">
+          <div class="dropdown-container">
             @if (availableQualifications.length === 0) {
               <p class="text-muted">Loading qualifications...</p>
             } @else {
-              <div class="row g-2">
-                @for (qualification of availableQualifications; track qualification.id) {
-                  <div class="col-md-6">
-                    <div class="form-check qualification-checkbox">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        [id]="'qual-' + qualification.id"
-                        [checked]="isQualificationSelected(qualification.skill)"
-                        (change)="toggleQualification(qualification.skill)"
-                      />
-                      <label class="form-check-label" [for]="'qual-' + qualification.id">
-                        {{ qualification.skill }}
-                      </label>
-                    </div>
-                  </div>
-                }
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Select Qualifications</label>
+                <select 
+                  class="form-select" 
+                  [(ngModel)]="selectedQualificationToAdd"
+                  (change)="addQualificationFromDropdown()"
+                >
+                  <option value="">-- Select a qualification to add --</option>
+                  @for (qualification of availableQualifications; track qualification.id) {
+                    @if (!isQualificationSelected(qualification.skill)) {
+                      <option [value]="qualification.skill">{{ qualification.skill }}</option>
+                    }
+                  }
+                </select>
               </div>
+              
+              <!-- Selected Qualifications Display -->
+              @if (currentEmployee.skillSet && currentEmployee.skillSet.length > 0) {
+                <div class="selected-qualifications mt-3">
+                  <label class="form-label fw-semibold mb-2">Selected Qualifications:</label>
+                  <div class="d-flex flex-wrap gap-2">
+                    @for (skill of currentEmployee.skillSet; track skill.skill) {
+                      <span class="badge bg-primary d-flex align-items-center gap-1 py-2 px-3">
+                        {{ skill.skill }}
+                        <button 
+                          type="button" 
+                          class="btn-close btn-close-white" 
+                          style="font-size: 0.6rem;"
+                          (click)="removeQualification(skill.skill)"
+                          aria-label="Remove"
+                        ></button>
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
             }
           </div>
-          <small class="text-muted">Select all qualifications that apply to this employee</small>
+          <small class="text-muted">Select qualifications from the dropdown to add to this employee</small>
         </div>
       </div>
       <div class="modal-footer">

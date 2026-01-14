@@ -43,6 +43,7 @@ export class EmployeeListComponent implements OnInit {
   currentEmployee: Employee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
   availableQualifications: Qualification[] = [];
   selectedQualifications: string[] = [];
+  selectedQualificationToAdd = '';
 
 
   constructor(
@@ -179,19 +180,39 @@ export class EmployeeListComponent implements OnInit {
     this.showAddEmployeeModal = false;
     this.currentEmployee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
     this.selectedQualifications = [];
+    this.selectedQualificationToAdd = '';
   }
 
-  toggleQualification(skillName: string) {
-    const index = this.selectedQualifications.indexOf(skillName);
-    if (index > -1) {
-      this.selectedQualifications.splice(index, 1);
-    } else {
-      this.selectedQualifications.push(skillName);
+  addQualificationFromDropdown() {
+    if (this.selectedQualificationToAdd && this.selectedQualificationToAdd.trim()) {
+      if (!this.currentEmployee.skillSet) {
+        this.currentEmployee.skillSet = [];
+      }
+      
+      // Check if not already added
+      const alreadyExists = this.currentEmployee.skillSet.some(
+        skill => skill.skill === this.selectedQualificationToAdd
+      );
+      
+      if (!alreadyExists) {
+        this.currentEmployee.skillSet.push({ skill: this.selectedQualificationToAdd });
+      }
+      
+      // Reset dropdown
+      this.selectedQualificationToAdd = '';
+    }
+  }
+
+  removeQualification(skillName: string) {
+    if (this.currentEmployee.skillSet) {
+      this.currentEmployee.skillSet = this.currentEmployee.skillSet.filter(
+        skill => skill.skill !== skillName
+      );
     }
   }
 
   isQualificationSelected(skillName: string): boolean {
-    return this.selectedQualifications.includes(skillName);
+    return this.currentEmployee.skillSet?.some(skill => skill.skill === skillName) || false;
   }
 
   saveNewEmployee() {
@@ -200,8 +221,8 @@ export class EmployeeListComponent implements OnInit {
       return;
     }
 
-    // Build skillSet from selected qualifications
-    this.currentEmployee.skillSet = this.selectedQualifications.map(skill => ({ skill }));
+    // skillSet is already built from the dropdown selections
+    // No need to rebuild it
 
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()

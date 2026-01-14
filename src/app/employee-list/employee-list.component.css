@@ -208,32 +208,22 @@
 }
 
 /* Add Employee Modal Specific Styles */
-.qualifications-multiselect {
-  max-height: 200px;
-  overflow-y: auto;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  padding: 1rem;
-  background-color: #f8f9fa;
-}
-
-.qualification-checkbox {
+.dropdown-container {
   padding: 0.5rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s;
 }
 
-.qualification-checkbox:hover {
-  background-color: #e9ecef;
+.selected-qualifications .badge {
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.qualification-checkbox .form-check-input {
+.selected-qualifications .btn-close-white {
+  opacity: 0.8;
   cursor: pointer;
 }
 
-.qualification-checkbox .form-check-label {
-  cursor: pointer;
-  user-select: none;
+.selected-qualifications .btn-close-white:hover {
+  opacity: 1;
 }
 
 .text-danger {
