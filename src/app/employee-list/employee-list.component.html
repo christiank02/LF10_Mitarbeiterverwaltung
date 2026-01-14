@@ -162,7 +162,6 @@
               <select
                 class="form-select"
                 [(ngModel)]="newSkill"
-                (change)="addSkill()"
               >
                 <option value="">-- Select a qualification to add --</option>
                 @for (qualification of availableQualifications; track qualification.id) {
@@ -171,6 +170,14 @@
                   }
                 }
               </select>
+              <button 
+                class="btn btn-primary" 
+                type="button" 
+                (click)="addSkill()"
+                [disabled]="!newSkill"
+              >
+                <i class="bi bi-plus-circle me-1"></i>Add
+              </button>
             </div>
             <small class="text-muted d-block mt-1">Only qualifications from the master list can be added</small>
           }
