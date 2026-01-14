@@ -137,7 +137,7 @@ export class EmployeeListComponent implements OnInit {
 
   editEmployee(employee: Employee) {
     this.isEditMode = true;
-    // Deep copy the employee to avoid modifying the original
+
     this.currentEmployee = {
       id: employee.id,
       firstName: employee.firstName,
@@ -148,13 +148,14 @@ export class EmployeeListComponent implements OnInit {
       phone: employee.phone,
       skillSet: employee.skillSet ? [...employee.skillSet] : []
     };
+
     this.fetchAvailableQualifications();
     this.showAddEmployeeModal = true;
   }
 
   deleteEmployee(employee: Employee) {
     if (!confirm(`Are you sure you want to delete ${employee.firstName} ${employee.lastName}?`)) return;
-    
+
     const token = this.authService.getAccessToken();
     this.http.delete(`http://localhost:8089/employees/${employee.id}`, {
       headers: new HttpHeaders()
@@ -200,23 +201,22 @@ export class EmployeeListComponent implements OnInit {
       if (!this.currentEmployee.skillSet) {
         this.currentEmployee.skillSet = [];
       }
-      
-      // Find the qualification object to get its ID
+// Find the qualification object to get its ID
       const qualification = this.availableQualifications.find(
         q => q.skill === this.selectedQualificationToAdd
       );
-      
+
       if (qualification && qualification.id !== undefined) {
-        // Check if not already added
-        const alreadyExists = this.currentEmployee.skillSet.some(
-          skill => skill.skill === this.selectedQualificationToAdd
-        );
-        
-        if (!alreadyExists) {
-          this.currentEmployee.skillSet.push({ skill: this.selectedQualificationToAdd, id: qualification.id });
+      // Check if not already added
+      const alreadyExists = this.currentEmployee.skillSet.some(
+        skill => skill.skill === this.selectedQualificationToAdd
+      );
+
+      if (!alreadyExists) {
+        this.currentEmployee.skillSet.push({ skill: this.selectedQualificationToAdd, id: qualification.id });
         }
       }
-      
+
       // Reset dropdown
       this.selectedQualificationToAdd = '';
     }
@@ -240,9 +240,7 @@ export class EmployeeListComponent implements OnInit {
       return;
     }
 
-    // Convert skillSet to array of IDs for API
     const skillSetIds = this.currentEmployee.skillSet?.map(skill => {
-      // If skill has an id property, use it; otherwise find it
       if ('id' in skill && skill.id !== undefined) {
         return skill.id;
       }
@@ -250,7 +248,6 @@ export class EmployeeListComponent implements OnInit {
       return qualification?.id;
     }).filter((id): id is number => id !== undefined) || [];
 
-    // Create request body matching API structure
     const requestBody = {
       lastName: this.currentEmployee.lastName,
       firstName: this.currentEmployee.firstName,
