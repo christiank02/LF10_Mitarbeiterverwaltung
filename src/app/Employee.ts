@@ -1,5 +1,6 @@
 export interface Skill {
   skill: string;
+  id?: number;
 }
 
 export class Employee {

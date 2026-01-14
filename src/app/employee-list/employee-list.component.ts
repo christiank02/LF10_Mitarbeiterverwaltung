@@ -189,13 +189,20 @@ export class EmployeeListComponent implements OnInit {
         this.currentEmployee.skillSet = [];
       }
       
-      // Check if not already added
-      const alreadyExists = this.currentEmployee.skillSet.some(
-        skill => skill.skill === this.selectedQualificationToAdd
+      // Find the qualification object to get its ID
+      const qualification = this.availableQualifications.find(
+        q => q.skill === this.selectedQualificationToAdd
       );
       
-      if (!alreadyExists) {
-        this.currentEmployee.skillSet.push({ skill: this.selectedQualificationToAdd });
+      if (qualification && qualification.id !== undefined) {
+        // Check if not already added
+        const alreadyExists = this.currentEmployee.skillSet.some(
+          skill => skill.skill === this.selectedQualificationToAdd
+        );
+        
+        if (!alreadyExists) {
+          this.currentEmployee.skillSet.push({ skill: this.selectedQualificationToAdd, id: qualification.id });
+        }
       }
       
       // Reset dropdown
@@ -221,15 +228,33 @@ export class EmployeeListComponent implements OnInit {
       return;
     }
 
-    // skillSet is already built from the dropdown selections
-    // No need to rebuild it
+    // Convert skillSet to array of IDs for API
+    const skillSetIds = this.currentEmployee.skillSet?.map(skill => {
+      // If skill has an id property, use it; otherwise find it
+      if ('id' in skill && skill.id !== undefined) {
+        return skill.id;
+      }
+      const qualification = this.availableQualifications.find(q => q.skill === skill.skill);
+      return qualification?.id;
+    }).filter((id): id is number => id !== undefined) || [];
+
+    // Create request body matching API structure
+    const requestBody = {
+      lastName: this.currentEmployee.lastName,
+      firstName: this.currentEmployee.firstName,
+      street: this.currentEmployee.street || '',
+      postcode: this.currentEmployee.postcode || '',
+      city: this.currentEmployee.city || '',
+      phone: this.currentEmployee.phone || '',
+      skillSet: skillSetIds
+    };
 
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    this.http.post('http://localhost:8089/employees', this.currentEmployee, { headers }).subscribe({
+    this.http.post('http://localhost:8089/employees', requestBody, { headers }).subscribe({
       next: () => {
         this.fetchData();
         this.closeAddEmployeeModal();
