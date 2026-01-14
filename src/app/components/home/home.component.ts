@@ -55,6 +55,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/employees']);
   }
 
+  navigateToQualifications() {
+    this.router.navigate(['/qualifications']);
+  }
+
   addNewEmployee() {
     // TODO: Implement add employee functionality
     console.log('Add new employee clicked');

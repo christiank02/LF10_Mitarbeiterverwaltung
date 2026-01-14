@@ -2,20 +2,30 @@
   <!-- Dashboard Header -->
   <div class="row mb-4">
     <div class="col-12 dashboard-header">
-      <h1 class="display-4 fw-bold">DASHBOARD</h1>
+      <h1 class="display-4 fw-bold">STARTSEITE</h1>
       <p class="lead">Willkommen im Employment Management System.</p>
     </div>
   </div>
 
   <!-- Mitarbeiter Tab -->
   <div class="row mb-4">
-    <div class="col-12">
+    <div class="col-6">
       <div class="card shadow-sm clickable-card" (click)="navigateToEmployees()">
         <div class="card-body">
           <h5 class="card-title mb-1">
             <i class="bi bi-people-fill me-2"></i>Mitarbeiter
           </h5>
           <p class="card-text text-muted small">Verwalten Sie alle Mitarbeiter.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card shadow-sm clickable-card" (click)="navigateToQualifications()">
+        <div class="card-body">
+          <h5 class="card-title mb-1">
+            <i class="bi bi-people-fill me-2"></i>Qualifikationen
+          </h5>
+          <p class="card-text text-muted small">Verwalten Sie alle Qualifikationen.</p>
         </div>
       </div>
     </div>

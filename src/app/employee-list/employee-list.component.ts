@@ -6,6 +6,7 @@ import {Observable, of} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Employee, Skill} from "../Employee";
 import {AuthService} from "../services/auth/auth.service";
+import {Qualification} from "../Qualification";
 
 @Component({
     selector: 'app-employee-list',
@@ -20,12 +21,10 @@ export class EmployeeListComponent implements OnInit {
   filteredEmployees: Employee[] = [];
   paginatedEmployees: Employee[] = [];
 
-  // Pagination
   currentPage = 1;
   itemsPerPage = 10;
   totalItems = 0;
 
-  // Filters
   searchTerm = '';
   selectedDepartment = '';
   selectedRole = '';
@@ -33,10 +32,14 @@ export class EmployeeListComponent implements OnInit {
   departments: string[] = ['IT', 'HR', 'Sales', 'Marketing', 'Finance'];
   roles: string[] = ['Developer', 'Manager', 'Analyst', 'Designer', 'Consultant'];
 
-  // Skills modal
   showSkillsModal = false;
   selectedEmployee: Employee | null = null;
   newSkill = '';
+
+  showModal = false;
+  isEditMode = false;
+  currentEmployee: Employee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '' };
+
 
   constructor(
     private http: HttpClient,
@@ -125,6 +128,57 @@ export class EmployeeListComponent implements OnInit {
       pages.push(i);
     }
     return pages;
+  }
+
+  openAddModal() {
+    this.isEditMode = false;
+    this.currentEmployee = { firstName: '', lastName: '' , city: '', street: '', postcode: '', phone: '' };
+    this.showModal = true;
+  }
+
+  openEditModal(employee: Employee) {
+    this.isEditMode = true;
+    this.currentEmployee = { ...employee };
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.currentEmployee = { firstName: '', lastName: '' , city: '', street: '', postcode: '', phone: '' };
+  }
+
+  saveEmployee() {
+    if (!this.currentEmployee.firstName?.trim()) return;
+
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    if (this.isEditMode) {
+      // Update qualification
+      this.http.put(`http://localhost:8089/employees/${this.currentEmployee.id}`,
+        this.currentEmployee,
+        { headers }
+      ).subscribe({
+        next: () => {
+          this.fetchData();
+          this.closeModal();
+        },
+        error: (err) => console.error('Error updating qualification:', err)
+      });
+    } else {
+      this.http.post('http://localhost:8089/employees',
+        this.currentEmployee,
+        { headers }
+      ).subscribe({
+        next: () => {
+          this.fetchData();
+          this.closeModal();
+        },
+        error: (err) => console.error('Error adding qualification:', err)
+      });
+    }
   }
 
   editEmployee(employee: Employee) {

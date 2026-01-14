@@ -9,24 +9,19 @@
 
     <div class="topbar-nav">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
-        Dashboard
+        Startseite
       </a>
       <a routerLink="/employees" routerLinkActive="active" class="nav-link">
-        Employees
+        Mitarbeiter
       </a>
       <a routerLink="/qualifications" routerLinkActive="active" class="nav-link">
-        Qualifications
+        Qualifikationen
       </a>
     </div>
 
     <!-- Right Section: Notifications, Profile, Login/Logout -->
     <div class="topbar-right">
       @if (isLoggedIn) {
-        <!-- Notification Bell -->
-        <button class="topbar-icon-btn" title="Benachrichtigungen">
-          <i class="bi bi-bell"></i>
-        </button>
-
         <!-- Profile Menu -->
         <div class="profile-dropdown">
           <button class="topbar-icon-btn" (click)="toggleProfileMenu()" title="Profil">

@@ -10,7 +10,7 @@
   <!-- Header with Title and Add Button -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h2 mb-0">Employees</h1>
-    <button class="btn btn-primary" (click)="addEmployee()">
+    <button class="btn btn-primary" (click)="openAddModal()">
       <i class="bi bi-person-plus me-2"></i>Add Employee
     </button>
   </div>
@@ -22,10 +22,10 @@
         <div class="col-md-6">
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input 
-              type="text" 
-              class="form-control" 
-              placeholder="Search employees..." 
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search employees..."
               [(ngModel)]="searchTerm"
               (input)="onSearchChange()"
             />
@@ -150,7 +150,6 @@
   </div>
 </div>
 
-<!-- Skills Modal -->
 @if (showSkillsModal && selectedEmployee) {
   <div class="modal-backdrop" (click)="closeSkillsModal()"></div>
   <div class="modal-dialog-custom">
@@ -166,10 +165,10 @@
         <div class="mb-4">
           <label class="form-label fw-semibold">Add New Skill</label>
           <div class="input-group">
-            <input 
-              type="text" 
-              class="form-control" 
-              placeholder="Enter skill name..." 
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter skill name..."
               [(ngModel)]="newSkill"
               (keyup.enter)="addSkill()"
             />
@@ -201,6 +200,47 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeSkillsModal()">Close</button>
       </div>
+    </div>
+  </div>
+}
+
+@if (showModal) {
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+  <div class="modal-dialog-custom">
+    <div class="modal-content-custom">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-award me-2"></i>{{ isEditMode ? 'Edit' : 'Add' }} Employee
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <label class="form-label fw-semibold">First Name</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter first name..."
+              [(ngModel)]="currentEmployee.firstName"
+              (keyup.enter)="saveEmployee()"
+              autofocus
+            />
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="form-label fw-semibold">Last Name</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter last name..."
+              [(ngModel)]="currentEmployee.lastName"
+              (keyup.enter)="saveEmployee()"
+            />
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
 }
