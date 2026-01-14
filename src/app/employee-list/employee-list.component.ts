@@ -136,8 +136,20 @@ export class EmployeeListComponent implements OnInit {
   }
 
   editEmployee(employee: Employee) {
-    // TODO: Implement edit functionality
-    console.log('Edit employee:', employee);
+    this.isEditMode = true;
+    // Deep copy the employee to avoid modifying the original
+    this.currentEmployee = {
+      id: employee.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      street: employee.street,
+      postcode: employee.postcode,
+      city: employee.city,
+      phone: employee.phone,
+      skillSet: employee.skillSet ? [...employee.skillSet] : []
+    };
+    this.fetchAvailableQualifications();
+    this.showAddEmployeeModal = true;
   }
 
   deleteEmployee(employee: Employee) {
@@ -254,13 +266,25 @@ export class EmployeeListComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    this.http.post('http://localhost:8089/employees', requestBody, { headers }).subscribe({
-      next: () => {
-        this.fetchData();
-        this.closeAddEmployeeModal();
-      },
-      error: (err) => console.error('Error adding employee:', err)
-    });
+    if (this.isEditMode && this.currentEmployee.id) {
+      // Update existing employee
+      this.http.put(`http://localhost:8089/employees/${this.currentEmployee.id}`, requestBody, { headers }).subscribe({
+        next: () => {
+          this.fetchData();
+          this.closeAddEmployeeModal();
+        },
+        error: (err) => console.error('Error updating employee:', err)
+      });
+    } else {
+      // Create new employee
+      this.http.post('http://localhost:8089/employees', requestBody, { headers }).subscribe({
+        next: () => {
+          this.fetchData();
+          this.closeAddEmployeeModal();
+        },
+        error: (err) => console.error('Error adding employee:', err)
+      });
+    }
   }
 
   getInitials(employee: Employee): string {

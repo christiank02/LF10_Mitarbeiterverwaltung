@@ -211,7 +211,8 @@
     <div class="modal-content-custom">
       <div class="modal-header">
         <h5 class="modal-title">
-          <i class="bi bi-person-plus me-2"></i>Add New Employee
+          <i class="bi" [class.bi-person-plus]="!isEditMode" [class.bi-pencil-square]="isEditMode"></i>
+          <span class="ms-2">{{ isEditMode ? 'Edit Employee' : 'Add New Employee' }}</span>
         </h5>
         <button type="button" class="btn-close" (click)="closeAddEmployeeModal()"></button>
       </div>
@@ -348,7 +349,8 @@
           (click)="saveNewEmployee()" 
           [disabled]="!currentEmployee.firstName?.trim() || !currentEmployee.lastName?.trim()"
         >
-          <i class="bi bi-check-lg me-1"></i>Add Employee
+          <i class="bi" [class.bi-check-lg]="!isEditMode" [class.bi-save]="isEditMode"></i>
+          <span class="ms-1">{{ isEditMode ? 'Save Changes' : 'Add Employee' }}</span>
         </button>
       </div>
     </div>
