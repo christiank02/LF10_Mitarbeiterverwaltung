@@ -318,20 +318,45 @@ export class EmployeeListComponent implements OnInit {
       return;
     }
 
-    // Send qualification ID to API
-    this.http.post(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications/${qualification.id}`,
-      {},
+    // Add the skill to the employee's skillSet
+    if (!this.selectedEmployee.skillSet) {
+      this.selectedEmployee.skillSet = [];
+    }
+    
+    // Check if skill is not already in the list
+    const alreadyExists = this.selectedEmployee.skillSet.some(s => s.skill === this.newSkill.trim());
+    if (!alreadyExists) {
+      this.selectedEmployee.skillSet.push({ skill: this.newSkill.trim(), id: qualification.id });
+    }
+
+    // Build the skillSet array with IDs
+    const skillSetIds = this.selectedEmployee.skillSet.map(skill => {
+      if ('id' in skill && skill.id !== undefined) {
+        return skill.id;
+      }
+      const qual = this.availableQualifications.find(q => q.skill === skill.skill);
+      return qual?.id;
+    }).filter((id): id is number => id !== undefined);
+
+    // Prepare the employee update body
+    const requestBody = {
+      lastName: this.selectedEmployee.lastName,
+      firstName: this.selectedEmployee.firstName,
+      street: this.selectedEmployee.street || '',
+      postcode: this.selectedEmployee.postcode || '',
+      city: this.selectedEmployee.city || '',
+      phone: this.selectedEmployee.phone || '',
+      skillSet: skillSetIds
+    };
+
+    // Update the entire employee via PUT
+    this.http.put(`http://localhost:8089/employees/${this.selectedEmployee.id}`,
+      requestBody,
       { headers }
     ).subscribe({
       next: () => {
-        if (this.selectedEmployee) {
-          if (!this.selectedEmployee.skillSet) {
-            this.selectedEmployee.skillSet = [];
-          }
-          this.selectedEmployee.skillSet.push({ skill: this.newSkill.trim(), id: qualification.id });
-          this.newSkill = '';
-          this.fetchData(); // Refresh to get updated data
-        }
+        this.newSkill = '';
+        this.fetchData(); // Refresh to get updated data
       },
       error: (err) => console.error('Error adding skill:', err)
     });
@@ -349,15 +374,38 @@ export class EmployeeListComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    // Delete using qualification ID
-    this.http.delete(`http://localhost:8089/employees/${this.selectedEmployee.id}/qualifications/${skill.id}`, {
-      headers
-    }).subscribe({
+    // Remove skill from employee's skillSet
+    if (this.selectedEmployee.skillSet) {
+      this.selectedEmployee.skillSet = this.selectedEmployee.skillSet.filter(s => s.skill !== skill.skill);
+    }
+
+    // Build the skillSet array with IDs
+    const skillSetIds = this.selectedEmployee.skillSet?.map(s => {
+      if ('id' in s && s.id !== undefined) {
+        return s.id;
+      }
+      const qual = this.availableQualifications.find(q => q.skill === s.skill);
+      return qual?.id;
+    }).filter((id): id is number => id !== undefined) || [];
+
+    // Prepare the employee update body
+    const requestBody = {
+      lastName: this.selectedEmployee.lastName,
+      firstName: this.selectedEmployee.firstName,
+      street: this.selectedEmployee.street || '',
+      postcode: this.selectedEmployee.postcode || '',
+      city: this.selectedEmployee.city || '',
+      phone: this.selectedEmployee.phone || '',
+      skillSet: skillSetIds
+    };
+
+    // Update the entire employee via PUT
+    this.http.put(`http://localhost:8089/employees/${this.selectedEmployee.id}`,
+      requestBody,
+      { headers }
+    ).subscribe({
       next: () => {
-        if (this.selectedEmployee && this.selectedEmployee.skillSet) {
-          this.selectedEmployee.skillSet = this.selectedEmployee.skillSet.filter(s => s.skill !== skill.skill);
-          this.fetchData(); // Refresh to get updated data
-        }
+        this.fetchData(); // Refresh to get updated data
       },
       error: (err) => console.error('Error deleting skill:', err)
     });
