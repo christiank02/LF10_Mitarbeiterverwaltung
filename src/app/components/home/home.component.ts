@@ -5,7 +5,10 @@ import { AuthService } from '../../services/auth/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Employee } from '../../Employee';
+import { Qualification } from '../../Qualification';
 import { SearchService } from '../../services/search/search.service';
+import { EmployeeModalComponent } from '../employee-modal/employee-modal.component';
+import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
 
 interface Activity {
   userName: string;
@@ -17,7 +20,7 @@ interface Activity {
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, EmployeeModalComponent, QualificationModalComponent],
     templateUrl: './home.component.html',
     styleUrl: './home.component.css'
 })
@@ -26,6 +29,11 @@ export class HomeComponent implements OnInit {
   searchTerm = '';
   allEmployees: Employee[] = [];
   filteredEmployees: Employee[] = [];
+
+  showEmployeeModal = false;
+  availableQualifications: Qualification[] = [];
+
+  showQualificationModal = false;
 
   activities: Activity[] = [
     {
@@ -65,6 +73,10 @@ export class HomeComponent implements OnInit {
   onEscapeKey(event: KeyboardEvent) {
     if (this.showSearchModal) {
       this.closeSearchModal();
+    } else if (this.showEmployeeModal) {
+      this.closeEmployeeModal();
+    } else if (this.showQualificationModal) {
+      this.closeQualificationModal();
     }
   }
 
@@ -77,11 +89,84 @@ export class HomeComponent implements OnInit {
   }
 
   addNewEmployee() {
-    console.log('Add new employee clicked');
+    this.fetchAvailableQualifications();
+    this.showEmployeeModal = true;
   }
 
   addNewQualification() {
-    console.log('Add new qualification clicked');
+    this.showQualificationModal = true;
+  }
+
+  fetchAvailableQualifications() {
+    const token = this.authService.getAccessToken();
+    this.http.get<Qualification[]>('http://localhost:8089/qualifications', {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
+    }).subscribe({
+      next: (data) => {
+        this.availableQualifications = data;
+      },
+      error: (err) => console.error('Error fetching qualifications:', err)
+    });
+  }
+
+  closeEmployeeModal() {
+    this.showEmployeeModal = false;
+  }
+
+  onEmployeeSave(employee: Employee) {
+    const skillSetIds = employee.skillSet?.map(skill => {
+      if ('id' in skill && skill.id !== undefined) {
+        return skill.id;
+      }
+      const qualification = this.availableQualifications.find(q => q.skill === skill.skill);
+      return qualification?.id;
+    }).filter((id): id is number => id !== undefined) || [];
+
+    const requestBody = {
+      lastName: employee.lastName,
+      firstName: employee.firstName,
+      street: employee.street || '',
+      postcode: employee.postcode || '',
+      city: employee.city || '',
+      phone: employee.phone || '',
+      skillSet: skillSetIds
+    };
+
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    this.http.post('http://localhost:8089/employees', requestBody, { headers }).subscribe({
+      next: () => {
+        this.closeEmployeeModal();
+        // Optional: Zeige Erfolgsmeldung oder navigiere zur Employee-Liste
+        this.router.navigate(['/employees']);
+      },
+      error: (err) => console.error('Error adding employee:', err)
+    });
+  }
+
+  closeQualificationModal() {
+    this.showQualificationModal = false;
+  }
+
+  onQualificationSave(qualification: Qualification) {
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    this.http.post('http://localhost:8089/qualifications', qualification, { headers }).subscribe({
+      next: () => {
+        this.closeQualificationModal();
+        // Optional: Zeige Erfolgsmeldung oder navigiere zur Qualifications-Liste
+        this.router.navigate(['/qualifications']);
+      },
+      error: (err) => console.error('Error adding qualification:', err)
+    });
   }
 
   searchEmployee() {

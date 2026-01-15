@@ -138,3 +138,21 @@
     }
   </div>
 }
+
+<app-employee-modal
+  [show]="showEmployeeModal"
+  [isEditMode]="false"
+  [employee]="null"
+  [availableQualifications]="availableQualifications"
+  (close)="closeEmployeeModal()"
+  (save)="onEmployeeSave($event)"
+></app-employee-modal>
+
+<app-qualification-modal
+  [show]="showQualificationModal"
+  [isEditMode]="false"
+  [qualification]="null"
+  (close)="closeQualificationModal()"
+  (save)="onQualificationSave($event)"
+></app-qualification-modal>
+
