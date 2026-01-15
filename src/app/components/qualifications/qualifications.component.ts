@@ -17,6 +17,7 @@ export class QualificationsComponent implements OnInit {
   qualifications: Qualification[] = [];
   filteredQualifications: Qualification[] = [];
   paginatedQualifications: Qualification[] = [];
+  employees: any[] = [];
 
   currentPage = 1;
   itemsPerPage = 10;
@@ -36,6 +37,7 @@ export class QualificationsComponent implements OnInit {
 
   ngOnInit() {
     this.fetchQualifications();
+    this.fetchEmployees();
   }
 
   fetchQualifications() {
@@ -51,6 +53,27 @@ export class QualificationsComponent implements OnInit {
       },
       error: (err) => console.error('Error fetching qualifications:', err)
     });
+  }
+
+  fetchEmployees() {
+    const token = this.authService.getAccessToken();
+    this.http.get<any[]>('http://localhost:8089/employees', {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
+    }).subscribe({
+      next: (data) => {
+        this.employees = data;
+      },
+      error: (err) => console.error('Error fetching employees:', err)
+    });
+  }
+
+  getEmployeeCount(qualificationId: number | undefined): number {
+    if (!qualificationId) return 0;
+    return this.employees.filter(emp =>
+      emp.skillSet?.some((skill: any) => skill.id === qualificationId)
+    ).length;
   }
 
   applyFilters() {

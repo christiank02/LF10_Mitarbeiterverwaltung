@@ -1,3 +1,4 @@
+/* Modal Styles - Minimalistisch */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -21,12 +22,12 @@
 }
 
 .modal-dialog-custom.modal-lg {
-  max-width: 800px;
+  max-width: 700px;
 }
 
 .modal-content-custom {
   background-color: white;
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   max-height: 90vh;
   display: flex;
@@ -34,8 +35,8 @@
 }
 
 .modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #dee2e6;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e9ecef;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -43,7 +44,7 @@
 }
 
 .modal-title {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
   display: flex;
@@ -62,6 +63,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.15s;
 }
 
 .btn-close:hover {
@@ -75,41 +77,47 @@
 }
 
 .modal-body {
-  padding: 1.5rem;
-  max-height: 60vh;
+  padding: 1.25rem;
+  max-height: 65vh;
   overflow-y: auto;
   flex-grow: 1;
 }
 
 .modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #dee2e6;
+  padding: 0.875rem 1.25rem;
+  border-top: 1px solid #e9ecef;
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
   flex-shrink: 0;
 }
 
-.dropdown-container {
-  padding: 0.5rem;
+.form-label {
+  margin-bottom: 0.375rem;
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
-.selected-qualifications .badge {
-  font-size: 0.9rem;
+.form-control {
+  font-size: 0.9375rem;
+}
+
+.badge {
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 
-.selected-qualifications .btn-close-white {
+.btn-close-white {
   opacity: 0.8;
   cursor: pointer;
 }
 
-.selected-qualifications .btn-close-white:hover {
+.btn-close-white:hover {
   opacity: 1;
 }
 
-.text-danger {
-  color: #dc3545;
+.btn-close-sm {
+  font-size: 0.5rem !important;
 }
 
 @keyframes fadeIn {

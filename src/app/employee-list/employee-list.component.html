@@ -132,13 +132,13 @@
     <div class="modal-content-custom">
       <div class="modal-header">
         <h5 class="modal-title">
-          <i class="bi bi-award me-2"></i>Kompetenzen - {{ selectedEmployee.firstName }} {{ selectedEmployee.lastName }}
+          <i class="bi bi-award me-2"></i>Qualifikationen - {{ selectedEmployee.firstName }} {{ selectedEmployee.lastName }}
         </h5>
         <button type="button" class="btn-close" (click)="closeSkillsModal()"></button>
       </div>
       <div class="modal-body">
         <div class="mb-4">
-          <label class="form-label fw-semibold">Neue Kompetenz hinzufügen</label>
+          <label class="form-label fw-semibold">Neue Qualifikation hinzufügen</label>
           @if (availableQualifications.length === 0) {
             <p class="text-muted">Qualifikationen werden geladen...</p>
           } @else {
@@ -168,9 +168,9 @@
         </div>
 
         <div>
-          <label class="form-label fw-semibold">Aktuelle Kompetenzen</label>
+          <label class="form-label fw-semibold">Aktuelle Qaulifikationen</label>
           @if (!selectedEmployee.skillSet || selectedEmployee.skillSet.length === 0) {
-            <p class="text-muted text-center py-3">Keine Kompetenzen hinzugefügt</p>
+            <p class="text-muted text-center py-3">Keine Qualifikationen hinzugefügt</p>
           } @else {
             <div class="skills-list">
               @for (skill of selectedEmployee.skillSet; track skill.skill) {
