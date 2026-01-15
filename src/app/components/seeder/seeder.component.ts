@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth/auth.service';
 import { firstValueFrom } from 'rxjs';
-
-interface Qualification { id?: number; skill: string }
+import {Skill} from "../../Employee";
 
 @Component({
   selector: 'app-seeder',
@@ -42,11 +41,9 @@ export class SeederComponent {
         .set('Content-Type', 'application/json')
         .set('Authorization', `Bearer ${this.authService.getAccessToken()}`);
 
-      // Normalize requested counts
       const qCount = Math.max(1, Math.min(this.qualificationCount, this.maxQualifications));
       const eCount = Math.max(1, Math.min(this.employeeCount, this.maxEmployees));
 
-      // 1) Generate and create qualifications (ignore duplicates)
       this.generatedQualificationNames = this.generateQualificationNames(qCount);
       for (const skill of this.generatedQualificationNames) {
         try {
@@ -60,9 +57,8 @@ export class SeederComponent {
         }
       }
 
-      // 2) Fetch all qualifications and build map
       const qualifications = await firstValueFrom(
-        this.http.get<Qualification[]>(`${this.baseUrl}/qualifications`, { headers })
+        this.http.get<Skill[]>(`${this.baseUrl}/qualifications`, { headers })
       );
       const qualMap = new Map<string, number>();
       qualifications.forEach(q => {
@@ -72,7 +68,6 @@ export class SeederComponent {
       });
       if (qualMap.size === 0) throw new Error('No qualifications available');
 
-      // Helper to pick random IDs
       const pickRandomSkillIds = (min = 2, max = 5) => {
         const count = Math.floor(Math.random() * (max - min)) + min;
         const names = Array.from(qualMap.keys());
@@ -84,11 +79,9 @@ export class SeederComponent {
         const ids = chosen
           .map(name => qualMap.get(name))
           .filter((id): id is number => typeof id === 'number');
-        // ensure uniqueness
         return Array.from(new Set(ids));
       };
 
-      // 3) Generate and create employees with random skill sets
       const employees = this.generateEmployees(eCount);
       for (const e of employees) {
         const skillSet = pickRandomSkillIds(2, 5);
@@ -130,7 +123,6 @@ export class SeederComponent {
     const names = [...base];
     while (unique.size < count) {
       if (names.length === 0) {
-        // create numbered variants to keep uniqueness
         const idx = unique.size + 1;
         unique.add(`Skill ${idx}`);
       } else {
