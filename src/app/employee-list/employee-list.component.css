@@ -72,8 +72,10 @@
 }
 
 .form-select-sm {
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 2rem 0.25rem 0.5rem;
   font-size: 0.875rem;
+  width: auto;
+  min-width: 70px;
 }
 
 /* Skills Modal */
