@@ -21,7 +21,7 @@
       <div class="card shadow-sm clickable-card" (click)="navigateToQualifications()">
         <div class="card-body">
           <h5 class="card-title mb-1">
-            <i class="bi bi-people-fill me-2"></i>Qualifikationen
+            <i class="bi bi-mortarboard-fill me-2"></i>Qualifikationen
           </h5>
           <p class="card-text text-muted small">Verwalten Sie alle Qualifikationen.</p>
         </div>
@@ -50,9 +50,9 @@
               </button>
             </div>
             <div class="col-md-4">
-              <button class="btn btn-outline-primary w-100 py-3" (click)="navigateToEmployees()">
-                <i class="bi bi-list-ul d-block mb-2" style="font-size: 2rem;"></i>
-                <span>Alle Mitarbeiter anzeigen</span>
+              <button class="btn btn-outline-primary w-100 py-3" (click)="addNewQualification()">
+                <i class="bi bi-award-fill d-block mb-2" style="font-size: 2rem;"></i>
+                <span>Neue Qualifikation hinzufügen</span>
               </button>
             </div>
           </div>
@@ -88,3 +88,53 @@
     </div>
   </div>
 </div>
+
+@if (showSearchModal) {
+  <div class="modal-backdrop" (click)="closeSearchModal()"></div>
+  <div class="search-modal">
+    <div class="search-container">
+      <div class="input-group">
+        <span class="input-group-text border-0 bg-white"><i class="bi bi-search"></i></span>
+        <input
+          type="text"
+          class="form-control border-0 shadow-none"
+          placeholder="Name oder Stadt eingeben..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          autofocus
+        />
+        <button type="button" class="btn-close-minimal" (click)="closeSearchModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+    
+    @if (searchTerm) {
+      <div class="search-results">
+        @if (filteredEmployees.length === 0) {
+          <div class="text-center text-muted py-2">
+            <small>Keine Mitarbeiter gefunden</small>
+          </div>
+        } @else {
+          <div class="results-list">
+            @for (employee of filteredEmployees; track employee.id) {
+              <div class="employee-result" (click)="viewEmployeeDetails(employee)">
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle-small me-2">
+                    {{ getInitials(employee) }}
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="employee-name">{{ employee.firstName }} {{ employee.lastName }}</div>
+                    <small class="text-muted">
+                      {{ employee.city || 'Keine Stadt' }} · {{ employee.phone || 'Keine Telefonnummer' }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+}
