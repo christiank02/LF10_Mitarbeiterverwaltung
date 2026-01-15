@@ -4,11 +4,11 @@ import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {Observable, of} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Employee, Skill} from "../Employee";
-import {AuthService} from "../services/auth/auth.service";
-import {Qualification} from "../Qualification";
-import {EmployeeModalComponent} from "../components/employee-modal/employee-modal.component";
-import {SearchService} from "../services/search/search.service";
+import {Employee, Skill} from "../../Employee";
+import {AuthService} from "../../services/auth/auth.service";
+import {Qualification} from "../../Qualification";
+import {EmployeeModalComponent} from "../employee-modal/employee-modal.component";
+import {SearchService} from "../../services/search/search.service";
 
 @Component({
     selector: 'app-employee-list',

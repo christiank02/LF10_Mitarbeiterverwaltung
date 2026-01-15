@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import {CallbackComponent} from "./callback/callback.component";
 import {authGuard} from "./guard/auth.guard";
-import {EmployeeListComponent} from "./employee-list/employee-list.component";
+import {EmployeeListComponent} from "./components/employee-list/employee-list.component";
 import {HomeComponent} from "./components/home/home.component";
 import {LoginComponent} from "./components/login/login.component";
 import {QualificationsComponent} from "./components/qualifications/qualifications.component";
