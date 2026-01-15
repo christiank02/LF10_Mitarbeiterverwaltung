@@ -178,6 +178,6 @@ export class QualificationsComponent implements OnInit {
   }
 
   viewDetails(qualification: Qualification) {
-    this.router.navigate(['/qualifikationen', qualification.id]);
+    this.router.navigate(['/qualifications', qualification.id]);
   }
 }
