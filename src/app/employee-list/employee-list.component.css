@@ -78,7 +78,6 @@
   min-width: 70px;
 }
 
-/* Skills Modal */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -209,7 +208,6 @@
   color: white;
 }
 
-/* Add Employee Modal Specific Styles */
 .dropdown-container {
   padding: 0.5rem;
 }

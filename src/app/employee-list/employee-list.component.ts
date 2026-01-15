@@ -26,18 +26,11 @@ export class EmployeeListComponent implements OnInit {
   totalItems = 0;
 
   searchTerm = '';
-  selectedDepartment = '';
-  selectedRole = '';
 
-  departments: string[] = ['IT', 'HR', 'Sales', 'Marketing', 'Finance'];
-  roles: string[] = ['Developer', 'Manager', 'Analyst', 'Designer', 'Consultant'];
-
-  // Skills modal
   showSkillsModal = false;
   selectedEmployee: Employee | null = null;
   newSkill = '';
 
-  // Add/Edit Employee Modal
   showAddEmployeeModal = false;
   isEditMode = false;
   currentEmployee: Employee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
@@ -77,9 +70,11 @@ export class EmployeeListComponent implements OnInit {
       const firstName = emp.firstName?.toLowerCase() || '';
       const lastName = emp.lastName?.toLowerCase() || '';
       const fullName = (firstName + ' ' + lastName).toLowerCase();
+      const fullNameReverse = (lastName + ' ' + firstName).toLowerCase();
 
       return !this.searchTerm ||
-        fullName.includes(this.searchTerm.toLowerCase());
+        fullName.includes(this.searchTerm.toLowerCase()) ||
+        fullNameReverse.includes(this.searchTerm.toLowerCase());
     });
 
     this.totalItems = this.filteredEmployees.length;
