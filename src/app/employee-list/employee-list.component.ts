@@ -8,6 +8,7 @@ import {Employee, Skill} from "../Employee";
 import {AuthService} from "../services/auth/auth.service";
 import {Qualification} from "../Qualification";
 import {EmployeeModalComponent} from "../components/employee-modal/employee-modal.component";
+import {SearchService} from "../services/search/search.service";
 
 @Component({
     selector: 'app-employee-list',
@@ -41,7 +42,8 @@ export class EmployeeListComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private searchService: SearchService
   ) {
     this.employees$ = of([]);
   }
@@ -65,17 +67,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   applyFilters() {
-    this.filteredEmployees = this.allEmployees.filter(emp => {
-      const firstName = emp.firstName?.toLowerCase() || '';
-      const lastName = emp.lastName?.toLowerCase() || '';
-      const fullName = (firstName + ' ' + lastName).toLowerCase();
-      const fullNameReverse = (lastName + ' ' + firstName).toLowerCase();
-
-      return !this.searchTerm ||
-        fullName.includes(this.searchTerm.toLowerCase()) ||
-        fullNameReverse.includes(this.searchTerm.toLowerCase());
-    });
-
+    this.filteredEmployees = this.searchService.filterEmployees(this.allEmployees, this.searchTerm);
     this.totalItems = this.filteredEmployees.length;
     this.updatePagination();
   }

@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Employee } from '../../Employee';
+import { SearchService } from '../../services/search/search.service';
 
 interface Activity {
   userName: string;
@@ -25,7 +26,7 @@ export class HomeComponent implements OnInit {
   searchTerm = '';
   allEmployees: Employee[] = [];
   filteredEmployees: Employee[] = [];
-  
+
   activities: Activity[] = [
     {
       userName: 'Anna Bella',
@@ -50,7 +51,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private http: HttpClient
+    private http: HttpClient,
+    private searchService: SearchService
   ) {}
 
   ngOnInit() {
@@ -107,17 +109,10 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    this.filteredEmployees = this.allEmployees.filter(emp => {
-      const firstName = emp.firstName?.toLowerCase() || '';
-      const lastName = emp.lastName?.toLowerCase() || '';
-      const fullName = (firstName + ' ' + lastName).toLowerCase();
-      const fullNameReverse = (lastName + ' ' + firstName).toLowerCase();
-      const city = emp.city?.toLowerCase() || '';
-
-      return fullName.includes(this.searchTerm.toLowerCase()) ||
-             city.includes(this.searchTerm.toLowerCase()) ||
-          fullNameReverse.includes(this.searchTerm.toLowerCase());
-    });
+    this.filteredEmployees = this.searchService.filterEmployees(
+      this.allEmployees,
+      this.searchTerm
+    );
   }
 
   onSearchChange() {

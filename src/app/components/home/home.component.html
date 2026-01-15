@@ -98,7 +98,7 @@
         <input
           type="text"
           class="form-control border-0 shadow-none"
-          placeholder="Name oder Stadt eingeben..."
+          placeholder="Mitarbeiter suchen (Name, Stadt, Qualifikationen)..."
           [(ngModel)]="searchTerm"
           (input)="onSearchChange()"
           autofocus
@@ -108,7 +108,7 @@
         </button>
       </div>
     </div>
-    
+
     @if (searchTerm) {
       <div class="search-results">
         @if (filteredEmployees.length === 0) {

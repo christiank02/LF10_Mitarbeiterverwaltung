@@ -1,0 +1,34 @@
+@if (show) {
+  <div class="modal-backdrop" (click)="onClose()"></div>
+  <div class="modal-dialog-custom">
+    <div class="modal-content-custom">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-award me-2"></i>{{ isEditMode ? 'Qualifikation bearbeiten' : 'Qualifikation hinzufügen' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="onClose()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Qualifikationsname <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Qualifikationsname"
+            [(ngModel)]="currentQualification.skill"
+            (keyup.enter)="onSave()"
+            autofocus
+          />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">Abbrechen</button>
+        <button type="button" class="btn btn-primary" (click)="onSave()" [disabled]="!currentQualification.skill.trim()">
+          <i class="bi" [class.bi-check-lg]="!isEditMode" [class.bi-save]="isEditMode"></i>
+          <span class="ms-1">{{ isEditMode ? 'Speichern' : 'Hinzufügen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
