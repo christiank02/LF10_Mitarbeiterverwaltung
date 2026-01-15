@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
         this.totalEmployees = employees.length;
         this.recentEmployees = employees
           .sort((a, b) => (b.id || 0) - (a.id || 0))
-          .slice(0, 5);
+          .slice(0, 3);
       },
       error: (err) => console.error('Error loading employees:', err)
     });
