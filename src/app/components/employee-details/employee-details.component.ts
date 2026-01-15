@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Employee, Skill } from '../../Employee';
+import { Qualification } from '../../Qualification';
 import { AuthService } from '../../services/auth/auth.service';
+import { EmployeeModalComponent } from '../employee-modal/employee-modal.component';
 
 @Component({
   selector: 'app-employee-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, EmployeeModalComponent],
   templateUrl: './employee-details.component.html',
   styleUrl: './employee-details.component.css'
 })
@@ -20,7 +22,10 @@ export class EmployeeDetailsComponent implements OnInit {
   // Skills modal
   showSkillsModal = false;
   newSkill = '';
-  availableSkills: string[] = [];
+  availableQualifications: Qualification[] = [];
+
+  // Edit modal
+  showEditModal = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,7 +62,7 @@ export class EmployeeDetailsComponent implements OnInit {
 
   openSkillsModal() {
     this.showSkillsModal = true;
-    this.fetchAvailableSkills();
+    this.fetchAvailableQualifications();
   }
 
   closeSkillsModal() {
@@ -65,17 +70,17 @@ export class EmployeeDetailsComponent implements OnInit {
     this.newSkill = '';
   }
 
-  fetchAvailableSkills() {
+  fetchAvailableQualifications() {
     const token = this.authService.getAccessToken();
-    this.http.get<any[]>('http://localhost:8089/qualifications', {
+    this.http.get<Qualification[]>('http://localhost:8089/qualifications', {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/json')
         .set('Authorization', `Bearer ${token}`)
     }).subscribe({
       next: (data) => {
-        this.availableSkills = data.map(q => q.skill);
+        this.availableQualifications = data;
       },
-      error: (err) => console.error('Error fetching available skills:', err)
+      error: (err) => console.error('Error fetching available qualifications:', err)
     });
   }
 
@@ -87,38 +92,147 @@ export class EmployeeDetailsComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    this.http.post(`http://localhost:8089/employees/${this.employee.id}/qualifications`,
-      { skill: this.newSkill.trim() },
+    // Find the qualification ID
+    const qualification = this.availableQualifications.find(q => q.skill === this.newSkill.trim());
+    if (!qualification || !qualification.id) {
+      console.error('Qualification not found');
+      return;
+    }
+
+    // Add the skill to the employee's skillSet
+    if (!this.employee.skillSet) {
+      this.employee.skillSet = [];
+    }
+
+    // Check if skill is not already in the list
+    const alreadyExists = this.employee.skillSet.some(s => s.skill === this.newSkill.trim());
+    if (!alreadyExists) {
+      this.employee.skillSet.push({ skill: this.newSkill.trim(), id: qualification.id });
+    }
+
+    // Build the skillSet array with IDs
+    const skillSetIds = this.employee.skillSet.map(skill => {
+      if ('id' in skill && skill.id !== undefined) {
+        return skill.id;
+      }
+      const qual = this.availableQualifications.find(q => q.skill === skill.skill);
+      return qual?.id;
+    }).filter((id): id is number => id !== undefined);
+
+    // Prepare the employee update body
+    const requestBody = {
+      lastName: this.employee.lastName,
+      firstName: this.employee.firstName,
+      street: this.employee.street || '',
+      postcode: this.employee.postcode || '',
+      city: this.employee.city || '',
+      phone: this.employee.phone || '',
+      skillSet: skillSetIds
+    };
+
+    // Update the entire employee via PUT
+    this.http.put(`http://localhost:8089/employees/${this.employee.id}`,
+      requestBody,
       { headers }
     ).subscribe({
       next: () => {
-        this.fetchEmployeeDetails();
         this.newSkill = '';
+        this.fetchEmployeeDetails(); // Refresh to get updated data
       },
       error: (err) => console.error('Error adding skill:', err)
     });
   }
 
+  isSkillAlreadyAdded(skillName: string): boolean {
+    return this.employee?.skillSet?.some(skill => skill.skill === skillName) || false;
+  }
+
   deleteSkill(skill: Skill) {
-    if (!this.employee) return;
+    if (!this.employee || !skill.id) return;
 
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    this.http.delete(`http://localhost:8089/employees/${this.employee.id}/qualifications`, {
-      headers,
-      body: { skill: skill.skill }
-    }).subscribe({
-      next: () => this.fetchEmployeeDetails(),
+    // Remove skill from employee's skillSet
+    if (this.employee.skillSet) {
+      this.employee.skillSet = this.employee.skillSet.filter(s => s.skill !== skill.skill);
+    }
+
+    // Build the skillSet array with IDs
+    const skillSetIds = this.employee.skillSet?.map(s => {
+      if ('id' in s && s.id !== undefined) {
+        return s.id;
+      }
+      const qual = this.availableQualifications.find(q => q.skill === s.skill);
+      return qual?.id;
+    }).filter((id): id is number => id !== undefined) || [];
+
+    // Prepare the employee update body
+    const requestBody = {
+      lastName: this.employee.lastName,
+      firstName: this.employee.firstName,
+      street: this.employee.street || '',
+      postcode: this.employee.postcode || '',
+      city: this.employee.city || '',
+      phone: this.employee.phone || '',
+      skillSet: skillSetIds
+    };
+
+    // Update the entire employee via PUT
+    this.http.put(`http://localhost:8089/employees/${this.employee.id}`,
+      requestBody,
+      { headers }
+    ).subscribe({
+      next: () => {
+        this.fetchEmployeeDetails(); // Refresh to get updated data
+      },
       error: (err) => console.error('Error deleting skill:', err)
     });
   }
 
   editEmployee() {
-    // TODO: Navigate to edit page
-    console.log('Edit employee');
+    if (!this.employee) return;
+    this.fetchAvailableQualifications();
+    this.showEditModal = true;
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+  }
+
+  onEmployeeSave(employee: Employee) {
+    const skillSetIds = employee.skillSet?.map(skill => {
+      if ('id' in skill && skill.id !== undefined) {
+        return skill.id;
+      }
+      const qualification = this.availableQualifications.find(q => q.skill === skill.skill);
+      return qualification?.id;
+    }).filter((id): id is number => id !== undefined) || [];
+
+    const requestBody = {
+      lastName: employee.lastName,
+      firstName: employee.firstName,
+      street: employee.street || '',
+      postcode: employee.postcode || '',
+      city: employee.city || '',
+      phone: employee.phone || '',
+      skillSet: skillSetIds
+    };
+
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    this.http.put(`http://localhost:8089/employees/${employee.id}`, requestBody, { headers }).subscribe({
+      next: () => {
+        this.fetchEmployeeDetails();
+        this.closeEditModal();
+      },
+      error: (err) => console.error('Error updating employee:', err)
+    });
   }
 
   deleteEmployee() {

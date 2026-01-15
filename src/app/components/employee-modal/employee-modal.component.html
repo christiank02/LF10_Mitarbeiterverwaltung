@@ -1,0 +1,149 @@
+@if (show) {
+  <div class="modal-backdrop" (click)="onClose()"></div>
+  <div class="modal-dialog-custom modal-lg">
+    <div class="modal-content-custom">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi" [class.bi-person-plus]="!isEditMode" [class.bi-pencil-square]="isEditMode"></i>
+          <span class="ms-2">{{ isEditMode ? 'Edit Employee' : 'Add New Employee' }}</span>
+        </h5>
+        <button type="button" class="btn-close" (click)="onClose()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">Personal Information</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter first name..."
+                [(ngModel)]="currentEmployee.firstName"
+                autofocus
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter last name..."
+                [(ngModel)]="currentEmployee.lastName"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">Address</h6>
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">Street</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter street address..."
+                [(ngModel)]="currentEmployee.street"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Postcode</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter postcode..."
+                [(ngModel)]="currentEmployee.postcode"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">City</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter city..."
+                [(ngModel)]="currentEmployee.city"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">Contact Information</h6>
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">Phone</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter phone number..."
+                [(ngModel)]="currentEmployee.phone"
+              />
+            </div>
+          </div>
+        </div>
+
+        @if (!isEditMode) {
+        <div class="mb-3">
+          <h6 class="text-primary mb-3">Kompetenzen</h6>
+          <div class="dropdown-container">
+            @if (availableQualifications.length === 0) {
+              <p class="text-muted">Loading qualifications...</p>
+            } @else {
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Select Qualifications</label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedQualificationToAdd"
+                  (change)="addQualificationFromDropdown()"
+                >
+                  <option value="">-- Select a qualification to add --</option>
+                  @for (qualification of availableQualifications; track qualification.id) {
+                    @if (!isQualificationSelected(qualification.skill)) {
+                      <option [value]="qualification.skill">{{ qualification.skill }}</option>
+                    }
+                  }
+                </select>
+              </div>
+
+              @if (currentEmployee.skillSet && currentEmployee.skillSet.length > 0) {
+                <div class="selected-qualifications mt-3">
+                  <label class="form-label fw-semibold mb-2">Selected Qualifications:</label>
+                  <div class="d-flex flex-wrap gap-2">
+                    @for (skill of currentEmployee.skillSet; track skill.skill) {
+                      <span class="badge bg-primary d-flex align-items-center gap-1 py-2 px-3">
+                        {{ skill.skill }}
+                        <button
+                          type="button"
+                          class="btn-close btn-close-white"
+                          style="font-size: 0.6rem;"
+                          (click)="removeQualification(skill.skill)"
+                          aria-label="Remove"
+                        ></button>
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+            }
+          </div>
+          <small class="text-muted">Select qualifications from the dropdown to add to this employee</small>
+        </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">Cancel</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onSave()"
+          [disabled]="!currentEmployee.firstName?.trim() || !currentEmployee.lastName?.trim()"
+        >
+          <i class="bi" [class.bi-check-lg]="!isEditMode" [class.bi-save]="isEditMode"></i>
+          <span class="ms-1">{{ isEditMode ? 'Save Changes' : 'Add Employee' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

@@ -7,11 +7,12 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Employee, Skill} from "../Employee";
 import {AuthService} from "../services/auth/auth.service";
 import {Qualification} from "../Qualification";
+import {EmployeeModalComponent} from "../components/employee-modal/employee-modal.component";
 
 @Component({
     selector: 'app-employee-list',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, RouterLink, EmployeeModalComponent],
     templateUrl: './employee-list.component.html',
     styleUrl: './employee-list.component.css'
 })
@@ -33,10 +34,8 @@ export class EmployeeListComponent implements OnInit {
 
   showAddEmployeeModal = false;
   isEditMode = false;
-  currentEmployee: Employee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
+  currentEmployee: Employee | null = null;
   availableQualifications: Qualification[] = [];
-  selectedQualifications: string[] = [];
-  selectedQualificationToAdd = '';
 
 
   constructor(
@@ -134,18 +133,7 @@ export class EmployeeListComponent implements OnInit {
 
   editEmployee(employee: Employee) {
     this.isEditMode = true;
-
-    this.currentEmployee = {
-      id: employee.id,
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      street: employee.street,
-      postcode: employee.postcode,
-      city: employee.city,
-      phone: employee.phone,
-      skillSet: employee.skillSet ? [...employee.skillSet] : []
-    };
-
+    this.currentEmployee = employee;
     this.fetchAvailableQualifications();
     this.showAddEmployeeModal = true;
   }
@@ -166,8 +154,7 @@ export class EmployeeListComponent implements OnInit {
 
   addEmployee() {
     this.isEditMode = false;
-    this.currentEmployee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
-    this.selectedQualifications = [];
+    this.currentEmployee = null;
     this.fetchAvailableQualifications();
     this.showAddEmployeeModal = true;
   }
@@ -188,56 +175,11 @@ export class EmployeeListComponent implements OnInit {
 
   closeAddEmployeeModal() {
     this.showAddEmployeeModal = false;
-    this.currentEmployee = { firstName: '', lastName: '', city: '', street: '', postcode: '', phone: '', skillSet: [] };
-    this.selectedQualifications = [];
-    this.selectedQualificationToAdd = '';
+    this.currentEmployee = null;
   }
 
-  addQualificationFromDropdown() {
-    if (this.selectedQualificationToAdd && this.selectedQualificationToAdd.trim()) {
-      if (!this.currentEmployee.skillSet) {
-        this.currentEmployee.skillSet = [];
-      }
-// Find the qualification object to get its ID
-      const qualification = this.availableQualifications.find(
-        q => q.skill === this.selectedQualificationToAdd
-      );
-
-      if (qualification && qualification.id !== undefined) {
-      // Check if not already added
-      const alreadyExists = this.currentEmployee.skillSet.some(
-        skill => skill.skill === this.selectedQualificationToAdd
-      );
-
-      if (!alreadyExists) {
-        this.currentEmployee.skillSet.push({ skill: this.selectedQualificationToAdd, id: qualification.id });
-        }
-      }
-
-      // Reset dropdown
-      this.selectedQualificationToAdd = '';
-    }
-  }
-
-  removeQualification(skillName: string) {
-    if (this.currentEmployee.skillSet) {
-      this.currentEmployee.skillSet = this.currentEmployee.skillSet.filter(
-        skill => skill.skill !== skillName
-      );
-    }
-  }
-
-  isQualificationSelected(skillName: string): boolean {
-    return this.currentEmployee.skillSet?.some(skill => skill.skill === skillName) || false;
-  }
-
-  saveNewEmployee() {
-    if (!this.currentEmployee.firstName?.trim() || !this.currentEmployee.lastName?.trim()) {
-      alert('Please fill in at least first name and last name');
-      return;
-    }
-
-    const skillSetIds = this.currentEmployee.skillSet?.map(skill => {
+  onEmployeeSave(employee: Employee) {
+    const skillSetIds = employee.skillSet?.map(skill => {
       if ('id' in skill && skill.id !== undefined) {
         return skill.id;
       }
@@ -246,12 +188,12 @@ export class EmployeeListComponent implements OnInit {
     }).filter((id): id is number => id !== undefined) || [];
 
     const requestBody = {
-      lastName: this.currentEmployee.lastName,
-      firstName: this.currentEmployee.firstName,
-      street: this.currentEmployee.street || '',
-      postcode: this.currentEmployee.postcode || '',
-      city: this.currentEmployee.city || '',
-      phone: this.currentEmployee.phone || '',
+      lastName: employee.lastName,
+      firstName: employee.firstName,
+      street: employee.street || '',
+      postcode: employee.postcode || '',
+      city: employee.city || '',
+      phone: employee.phone || '',
       skillSet: skillSetIds
     };
 
@@ -260,9 +202,9 @@ export class EmployeeListComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    if (this.isEditMode && this.currentEmployee.id) {
+    if (this.isEditMode && employee.id) {
       // Update existing employee
-      this.http.put(`http://localhost:8089/employees/${this.currentEmployee.id}`, requestBody, { headers }).subscribe({
+      this.http.put(`http://localhost:8089/employees/${employee.id}`, requestBody, { headers }).subscribe({
         next: () => {
           this.fetchData();
           this.closeAddEmployeeModal();

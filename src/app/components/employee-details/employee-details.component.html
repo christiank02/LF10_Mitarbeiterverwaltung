@@ -135,10 +135,12 @@
       <div class="modal-body">
         <div class="mb-3">
           <label class="form-label fw-semibold">Select Qualification</label>
-          <select class="form-select" [(ngModel)]="newSkill">
+          <select class="form-select" [(ngModel)]="newSkill" style="width: 100%;">
             <option value="">Choose a qualification...</option>
-            @for (skill of availableSkills; track skill) {
-              <option [value]="skill">{{ skill }}</option>
+            @for (qualification of availableQualifications; track qualification.id) {
+              @if (!isSkillAlreadyAdded(qualification.skill)) {
+                <option [value]="qualification.skill">{{ qualification.skill }}</option>
+              }
             }
           </select>
         </div>
@@ -152,3 +154,15 @@
     </div>
   </div>
 }
+
+<!-- Edit Employee Modal -->
+<app-employee-modal
+  [show]="showEditModal"
+  [isEditMode]="true"
+  [employee]="employee"
+  [availableQualifications]="availableQualifications"
+  (close)="closeEditModal()"
+  (save)="onEmployeeSave($event)"
+></app-employee-modal>
+
+
