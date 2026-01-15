@@ -10,13 +10,6 @@ import { SearchService } from '../../services/search/search.service';
 import { EmployeeModalComponent } from '../employee-modal/employee-modal.component';
 import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
 
-interface Activity {
-  userName: string;
-  action: string;
-  timestamp: Date;
-  userInitials: string;
-}
-
 @Component({
     selector: 'app-home',
     standalone: true,
@@ -35,26 +28,10 @@ export class HomeComponent implements OnInit {
 
   showQualificationModal = false;
 
-  activities: Activity[] = [
-    {
-      userName: 'Anna Bella',
-      action: 'wurde hinzugefügt',
-      timestamp: new Date('2026-01-12T10:30:00'),
-      userInitials: 'AB'
-    },
-    {
-      userName: 'Max Müller',
-      action: 'wurde aktualisiert',
-      timestamp: new Date('2026-01-12T09:15:00'),
-      userInitials: 'MM'
-    },
-    {
-      userName: 'Sarah Schmidt',
-      action: 'wurde gelöscht',
-      timestamp: new Date('2026-01-12T08:45:00'),
-      userInitials: 'SS'
-    }
-  ];
+  // Statistics
+  totalEmployees = 0;
+  totalQualifications = 0;
+  recentEmployees: Employee[] = [];
 
   constructor(
     private router: Router,
@@ -66,7 +43,36 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
+    } else {
+      this.loadStatistics();
     }
+  }
+
+  loadStatistics() {
+    const token = this.authService.getAccessToken();
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${token}`);
+
+    // Load employees for statistics
+    this.http.get<Employee[]>('http://localhost:8089/employees', { headers }).subscribe({
+      next: (employees) => {
+        this.totalEmployees = employees.length;
+        // Get last 5 employees (assuming higher IDs are newer)
+        this.recentEmployees = employees
+          .sort((a, b) => (b.id || 0) - (a.id || 0))
+          .slice(0, 5);
+      },
+      error: (err) => console.error('Error loading employees:', err)
+    });
+
+    // Load qualifications for statistics
+    this.http.get<Qualification[]>('http://localhost:8089/qualifications', { headers }).subscribe({
+      next: (qualifications) => {
+        this.totalQualifications = qualifications.length;
+      },
+      error: (err) => console.error('Error loading qualifications:', err)
+    });
   }
 
   @HostListener('document:keydown.escape', ['$event'])

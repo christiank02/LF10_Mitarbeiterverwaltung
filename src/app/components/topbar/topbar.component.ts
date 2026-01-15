@@ -1,7 +1,8 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-topbar',
@@ -10,9 +11,10 @@ import { AuthService } from '../../services/auth/auth.service';
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.css'
 })
-export class TopbarComponent implements OnInit {
+export class TopbarComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   showProfileMenu = false;
+  private authSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -20,7 +22,22 @@ export class TopbarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isLoggedIn = this.authService.isLoggedIn();
+    // Abonniere den Login-Status Observable
+    this.authSubscription = this.authService.loggedIn$.subscribe(
+      loggedIn => {
+        this.isLoggedIn = loggedIn;
+        if (!loggedIn) {
+          this.showProfileMenu = false;
+        }
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    // Cleanup: Abonnement beenden
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 
   @HostListener('document:click', ['$event'])
@@ -41,13 +58,8 @@ export class TopbarComponent implements OnInit {
     this.showProfileMenu = false;
   }
 
-  login() {
-    this.router.navigate(['/login']);
-  }
-
   logout() {
     this.authService.logout();
-    this.isLoggedIn = false;
     this.showProfileMenu = false;
     this.router.navigate(['/login']);
   }

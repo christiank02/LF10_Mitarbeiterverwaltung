@@ -62,27 +62,56 @@
   </div>
 
   <div class="row mb-4">
-    <div class="col-12">
-      <div class="card shadow-sm">
-        <div class="card-header bg-secondary text-white">
-          <h5 class="mb-0">Letzte Aktivitäten</h5>
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="bi bi-bar-chart-fill me-2"></i>Statistik</h5>
         </div>
         <div class="card-body">
-          <div class="list-group list-group-flush">
-            @for (activity of activities; track activity.timestamp) {
-              <div class="list-group-item d-flex align-items-start">
-                <div class="avatar-circle me-3">
-                  {{ activity.userInitials }}
-                </div>
-                <div class="flex-grow-1">
-                  <div class="mb-1">
-                    <strong>{{ activity.userName }}</strong> {{ activity.action }}
-                  </div>
-                  <small class="text-muted">{{ activity.timestamp | date: 'dd.MM.yyyy HH:mm' }} Uhr</small>
-                </div>
+          <div class="row text-center">
+            <div class="col-6 mb-3">
+              <div class="stat-card">
+                <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                <h2 class="mt-2 mb-0">{{ totalEmployees }}</h2>
+                <p class="text-muted mb-0">Mitarbeiter</p>
               </div>
-            }
+            </div>
+            <div class="col-6 mb-3">
+              <div class="stat-card">
+                <i class="bi bi-award-fill text-success" style="font-size: 3rem;"></i>
+                <h2 class="mt-2 mb-0">{{ totalQualifications }}</h2>
+                <p class="text-muted mb-0">Qualifikationen</p>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Neueste Mitarbeiter</h5>
+        </div>
+        <div class="card-body">
+          @if (recentEmployees.length === 0) {
+            <p class="text-muted text-center py-3">Keine Mitarbeiter vorhanden</p>
+          } @else {
+            <div class="list-group list-group-flush">
+              @for (employee of recentEmployees; track employee.id) {
+                <div class="list-group-item d-flex align-items-center px-0 py-2 clickable-row" (click)="viewEmployeeDetails(employee)">
+                  <div class="avatar-circle me-3">
+                    {{ getInitials(employee) }}
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold">{{ employee.firstName }} {{ employee.lastName }}</div>
+                    <small class="text-muted">{{ employee.city || 'Keine Stadt' }}</small>
+                  </div>
+                  <i class="bi bi-chevron-right text-muted"></i>
+                </div>
+              }
+            </div>
+          }
         </div>
       </div>
     </div>

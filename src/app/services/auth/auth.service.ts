@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +22,23 @@ export class AuthService {
   private configurePromise: Promise<void>;
   private readonly SESSION_KEY = 'isLoggedIn';
 
+  // BehaviorSubject für Login-Status
+  private loggedInSubject = new BehaviorSubject<boolean>(this.checkInitialLoginStatus());
+  public loggedIn$: Observable<boolean> = this.loggedInSubject.asObservable();
+
   constructor(
     private oauthService: OAuthService,
     private router: Router
   ) {
     this.configurePromise = this.configure();
+  }
+
+  private checkInitialLoginStatus(): boolean {
+    try {
+      return sessionStorage.getItem(this.SESSION_KEY) === 'true';
+    } catch {
+      return false;
+    }
   }
 
   private async configure() {
@@ -68,6 +81,7 @@ export class AuthService {
       const isValid = this.hasValidToken();
       if (isValid) {
         sessionStorage.setItem(this.SESSION_KEY, 'true');
+        this.loggedInSubject.next(true);
       }
       return isValid;
     } catch (error) {
@@ -84,6 +98,7 @@ export class AuthService {
   public logout() {
     this.oauthService.logOut();
     sessionStorage.removeItem(this.SESSION_KEY);
+    this.loggedInSubject.next(false);
   }
 
   public hasValidToken(): boolean {
