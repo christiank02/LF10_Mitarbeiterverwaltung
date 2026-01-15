@@ -1,20 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Qualification } from '../../Qualification';
 import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
 import { QualificationService } from '../../services/qualification/qualification.service';
-
-interface EmployeeBasic {
-  id: number;
-  lastName: string;
-  firstName: string;
-}
-
-interface QualificationDetailsResponse {
-  qualification: Qualification;
-  employees: EmployeeBasic[];
-}
+import {Employee, Skill} from "../../Employee";
 
 @Component({
   selector: 'app-qualification-details',
@@ -24,8 +13,8 @@ interface QualificationDetailsResponse {
   styleUrl: './qualification-details.component.css'
 })
 export class QualificationDetailsComponent implements OnInit {
-  qualification: Qualification | null = null;
-  employees: EmployeeBasic[] = [];
+  qualification: Skill | null = null;
+  employees: Employee[] = [];
   qualificationId: string | null = null;
 
   showEditModal = false;
@@ -53,13 +42,13 @@ export class QualificationDetailsComponent implements OnInit {
     });
   }
 
-  getInitials(employee: EmployeeBasic): string {
+  getInitials(employee: Employee): string {
     const first = employee.firstName?.charAt(0) || '';
     const last = employee.lastName?.charAt(0) || '';
     return (first + last).toUpperCase();
   }
 
-  viewEmployee(employee: EmployeeBasic) {
+  viewEmployee(employee: Employee) {
     this.router.navigate(['/employees', employee.id]);
   }
 
@@ -71,7 +60,7 @@ export class QualificationDetailsComponent implements OnInit {
     this.showEditModal = false;
   }
 
-  onQualificationSave(qualification: Qualification) {
+  onQualificationSave(qualification: Skill) {
     this.qualificationService.update(qualification.id!, qualification).subscribe({
       next: () => {
         this.fetchQualificationDetails();

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Qualification } from '../../Qualification';
+import {Skill} from "../../Employee";
 
 @Component({
   selector: 'app-qualification-modal',
@@ -13,12 +13,12 @@ import { Qualification } from '../../Qualification';
 export class QualificationModalComponent implements OnChanges {
   @Input() show = false;
   @Input() isEditMode = false;
-  @Input() qualification: Qualification | null = null;
+  @Input() qualification: Skill | null = null;
 
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<Qualification>();
+  @Output() save = new EventEmitter<Skill>();
 
-  currentQualification: Qualification = { skill: '' };
+  currentQualification: Skill = { skill: '' };
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['qualification'] && this.qualification) {

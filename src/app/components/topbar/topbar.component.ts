@@ -21,7 +21,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Abonniere den Login-Status Observable
     this.authSubscription = this.authService.loggedIn$.subscribe(
       loggedIn => {
         this.isLoggedIn = loggedIn;
@@ -33,7 +32,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Cleanup: Abonnement beenden
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
@@ -60,7 +58,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout();
     this.showProfileMenu = false;
-    // OAuth Service redirects to postLogoutRedirectUri automatically
   }
 
   goToSettings() {

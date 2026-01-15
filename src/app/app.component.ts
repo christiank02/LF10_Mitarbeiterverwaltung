@@ -13,5 +13,4 @@ import { ToastComponent } from './components/toast/toast.component';
 })
 export class AppComponent {
   title = 'lf10StarterNew';
-  showTopbar = true;
 }

@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Employee } from '../../Employee';
-import { Qualification } from '../../Qualification';
+import {Employee, Skill} from '../../Employee';
 
 @Component({
   selector: 'app-employee-modal',
@@ -15,7 +14,7 @@ export class EmployeeModalComponent implements OnChanges {
   @Input() show = false;
   @Input() isEditMode = false;
   @Input() employee: Employee | null = null;
-  @Input() availableQualifications: Qualification[] = [];
+  @Input() availableQualifications: Skill[] = [];
 
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<Employee>();

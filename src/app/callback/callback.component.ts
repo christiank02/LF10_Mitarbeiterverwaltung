@@ -17,12 +17,8 @@ export class CallbackComponent implements OnInit {
 
   async ngOnInit() {
     console.log("Handling OAuth2 callback...");
-    const success = await this.authService.handleCallback();
+    await this.authService.handleCallback();
 
-    if (success) {
-      this.router.navigate(['/employees']);
-    } else {
-      this.router.navigate(['/']);
-    }
+    this.router.navigate(['/']);
   }
 }

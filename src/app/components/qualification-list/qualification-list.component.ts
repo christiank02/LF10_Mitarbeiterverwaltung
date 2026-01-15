@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Qualification } from '../../Qualification';
 import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
 import { QualificationService } from '../../services/qualification/qualification.service';
 import { EmployeeService } from '../../services/employee/employee.service';
+import {Skill} from "../../Employee";
 
 @Component({
   selector: 'app-qualification-list',
@@ -15,9 +15,9 @@ import { EmployeeService } from '../../services/employee/employee.service';
   styleUrl: './qualification-list.component.css'
 })
 export class QualificationListComponent implements OnInit {
-  qualifications: Qualification[] = [];
-  filteredQualifications: Qualification[] = [];
-  paginatedQualifications: Qualification[] = [];
+  qualifications: Skill[] = [];
+  filteredQualifications: Skill[] = [];
+  paginatedQualifications: Skill[] = [];
   employees: any[] = [];
 
   currentPage = 1;
@@ -28,7 +28,7 @@ export class QualificationListComponent implements OnInit {
 
   showModal = false;
   isEditMode = false;
-  currentQualification: Qualification | null = null;
+  currentQualification: Skill | null = null;
 
   constructor(
     private qualificationService: QualificationService,
@@ -133,7 +133,7 @@ export class QualificationListComponent implements OnInit {
     this.showModal = true;
   }
 
-  openEditModal(qualification: Qualification) {
+  openEditModal(qualification: Skill) {
     this.isEditMode = true;
     this.currentQualification = qualification;
     this.showModal = true;
@@ -144,7 +144,7 @@ export class QualificationListComponent implements OnInit {
     this.currentQualification = null;
   }
 
-  onQualificationSave(qualification: Qualification) {
+  onQualificationSave(qualification: Skill) {
     if (this.isEditMode && qualification.id) {
       this.qualificationService.update(qualification.id, qualification).subscribe({
         next: () => {
@@ -164,7 +164,7 @@ export class QualificationListComponent implements OnInit {
     }
   }
 
-  deleteQualification(qualification: Qualification) {
+  deleteQualification(qualification: Skill) {
     if (!confirm(`Sind Sie sicher, dass Sie "${qualification.skill}" löschen möchten?`)) return;
 
     this.qualificationService.delete(qualification.id!).subscribe({
@@ -173,7 +173,7 @@ export class QualificationListComponent implements OnInit {
     });
   }
 
-  viewDetails(qualification: Qualification) {
+  viewDetails(qualification: Skill) {
     this.router.navigate(['/qualifications', qualification.id]);
   }
 }

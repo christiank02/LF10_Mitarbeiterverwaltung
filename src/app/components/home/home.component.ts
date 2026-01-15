@@ -1,10 +1,8 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth/auth.service';
 import { FormsModule } from '@angular/forms';
-import { Employee } from '../../Employee';
-import { Qualification } from '../../Qualification';
+import {Employee, Skill} from '../../Employee';
 import { SearchService } from '../../services/search/search.service';
 import { EmployeeModalComponent } from '../employee-modal/employee-modal.component';
 import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
@@ -27,7 +25,7 @@ export class HomeComponent implements OnInit {
   filteredEmployees: Employee[] = [];
 
   showEmployeeModal = false;
-  availableQualifications: Qualification[] = [];
+  availableQualifications: Skill[] = [];
 
   showQualificationModal = false;
 
@@ -37,7 +35,6 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthService,
     private searchService: SearchService,
     private employeeService: EmployeeService,
     private qualificationService: QualificationService
@@ -51,7 +48,6 @@ export class HomeComponent implements OnInit {
     this.employeeService.getAll().subscribe({
       next: (employees) => {
         this.totalEmployees = employees.length;
-        // Get last 5 employees (assuming higher IDs are newer)
         this.recentEmployees = employees
           .sort((a, b) => (b.id || 0) - (a.id || 0))
           .slice(0, 5);
@@ -124,7 +120,7 @@ export class HomeComponent implements OnInit {
     this.showQualificationModal = false;
   }
 
-  onQualificationSave(qualification: Qualification) {
+  onQualificationSave(qualification: Skill) {
     this.qualificationService.create(qualification).subscribe({
       next: () => {
         this.closeQualificationModal();
@@ -140,7 +136,6 @@ export class HomeComponent implements OnInit {
     this.filteredEmployees = [];
     this.loadEmployees();
 
-    // Fokussiere das Suchfeld automatisch
     setTimeout(() => {
       this.searchInput?.nativeElement.focus();
     }, 0);

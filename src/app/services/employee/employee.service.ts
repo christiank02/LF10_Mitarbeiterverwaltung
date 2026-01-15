@@ -17,9 +17,6 @@ export class EmployeeService {
     private toastService: ToastService
   ) {}
 
-  /**
-   * Generates HTTP headers with Authorization token
-   */
   private getHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();
     return new HttpHeaders()
@@ -27,27 +24,18 @@ export class EmployeeService {
       .set('Authorization', `Bearer ${token}`);
   }
 
-  /**
-   * Get all employees
-   */
   getAll(): Observable<Employee[]> {
     return this.http.get<Employee[]>(this.baseUrl, {
       headers: this.getHeaders()
     });
   }
 
-  /**
-   * Get employee by ID
-   */
   getById(id: string | number): Observable<Employee> {
     return this.http.get<Employee>(`${this.baseUrl}/${id}`, {
       headers: this.getHeaders()
     });
   }
 
-  /**
-   * Create a new employee
-   */
   create(employee: {
     firstName: string;
     lastName: string;
@@ -68,9 +56,6 @@ export class EmployeeService {
     );
   }
 
-  /**
-   * Update an existing employee
-   */
   update(id: string | number, employee: {
     firstName: string;
     lastName: string;
@@ -91,9 +76,6 @@ export class EmployeeService {
     );
   }
 
-  /**
-   * Delete an employee
-   */
   delete(id: string | number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, {
       headers: this.getHeaders()
@@ -106,10 +88,6 @@ export class EmployeeService {
     );
   }
 
-  /**
-   * Prepare employee data for API request
-   * Converts Employee object to API format with skill IDs
-   */
   prepareEmployeeData(employee: Employee, availableQualifications: any[]): {
     firstName: string;
     lastName: string;

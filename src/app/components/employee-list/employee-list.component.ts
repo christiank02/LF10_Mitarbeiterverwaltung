@@ -4,7 +4,6 @@ import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {Observable, of} from "rxjs";
 import {Employee, Skill} from "../../Employee";
-import {Qualification} from "../../Qualification";
 import {EmployeeModalComponent} from "../employee-modal/employee-modal.component";
 import {SearchService} from "../../services/search/search.service";
 import {EmployeeService} from "../../services/employee/employee.service";
@@ -36,7 +35,7 @@ export class EmployeeListComponent implements OnInit {
   showAddEmployeeModal = false;
   isEditMode = false;
   currentEmployee: Employee | null = null;
-  availableQualifications: Qualification[] = [];
+  availableQualifications: Skill[] = [];
 
 
   constructor(

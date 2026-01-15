@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Employee, Skill } from '../../Employee';
-import { Qualification } from '../../Qualification';
 import { EmployeeModalComponent } from '../employee-modal/employee-modal.component';
 import { EmployeeService } from '../../services/employee/employee.service';
 import { QualificationService } from '../../services/qualification/qualification.service';
@@ -21,7 +20,8 @@ export class EmployeeDetailsComponent implements OnInit {
 
   showSkillsModal = false;
   newSkill = '';
-  availableQualifications: Qualification[] = [];
+  availableQualifications: Skill[] = [];
+
   showEditModal = false;
 
   constructor(

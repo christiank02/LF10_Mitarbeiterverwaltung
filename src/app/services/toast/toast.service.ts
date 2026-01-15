@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Toast, ToastType } from './toast.model';
+import { Toast, ToastType } from '../../Toast';
 
 @Injectable({
   providedIn: 'root'
@@ -46,10 +46,6 @@ export class ToastService {
   remove(id: string): void {
     const current = this.toasts$.value;
     this.toasts$.next(current.filter(t => t.id !== id));
-  }
-
-  clear(): void {
-    this.toasts$.next([]);
   }
 }
 

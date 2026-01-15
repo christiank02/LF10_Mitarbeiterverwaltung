@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -22,13 +21,11 @@ export class AuthService {
   private configurePromise: Promise<void>;
   private readonly SESSION_KEY = 'isLoggedIn';
 
-  // BehaviorSubject für Login-Status
   private loggedInSubject = new BehaviorSubject<boolean>(this.checkInitialLoginStatus());
   public loggedIn$: Observable<boolean> = this.loggedInSubject.asObservable();
 
   constructor(
     private oauthService: OAuthService,
-    private router: Router
   ) {
     this.configurePromise = this.configure();
   }
