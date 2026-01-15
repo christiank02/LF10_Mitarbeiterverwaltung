@@ -1,6 +1,5 @@
 <nav class="topbar">
   <div class="topbar-container">
-    <!-- Left Section: Logo + Navigation -->
     <div class="topbar-left">
       <div class="topbar-logo">
         <i class="bi bi-people-fill"></i>
@@ -11,18 +10,16 @@
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
         Startseite
       </a>
-      <a routerLink="/employees" routerLinkActive="active" class="nav-link">
+      <a routerLink="/mitarbeiter" routerLinkActive="active" class="nav-link">
         Mitarbeiter
       </a>
-      <a routerLink="/qualifications" routerLinkActive="active" class="nav-link">
+      <a routerLink="/qualifikationen" routerLinkActive="active" class="nav-link">
         Qualifikationen
       </a>
     </div>
 
-    <!-- Right Section: Notifications, Profile, Login/Logout -->
     <div class="topbar-right">
       @if (isLoggedIn) {
-        <!-- Profile Menu -->
         <div class="profile-dropdown">
           <button class="topbar-icon-btn" (click)="toggleProfileMenu()" title="Profil">
             <i class="bi bi-person-circle"></i>
@@ -37,13 +34,11 @@
           }
         </div>
 
-        <!-- Logout Button -->
         <button class="topbar-btn" (click)="logout()" title="Abmelden">
           <i class="bi bi-box-arrow-right"></i>
           Abmelden
         </button>
       } @else {
-        <!-- Login Button -->
         <button class="topbar-btn" (click)="login()" title="Anmelden">
           <i class="bi bi-box-arrow-in-right"></i>
           Anmelden

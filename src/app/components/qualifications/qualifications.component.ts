@@ -169,7 +169,7 @@ export class QualificationsComponent implements OnInit {
   }
 
   deleteQualification(qualification: Qualification) {
-    if (!confirm(`Are you sure you want to delete "${qualification.skill}"?`)) return;
+    if (!confirm(`Sind Sie sicher, dass Sie "${qualification.skill}" löschen möchten?`)) return;
 
     const token = this.authService.getAccessToken();
     this.http.delete(`http://localhost:8089/qualifications/${qualification.id}`, {
@@ -183,6 +183,6 @@ export class QualificationsComponent implements OnInit {
   }
 
   viewDetails(qualification: Qualification) {
-    this.router.navigate(['/qualifications', qualification.id]);
+    this.router.navigate(['/qualifikationen', qualification.id]);
   }
 }

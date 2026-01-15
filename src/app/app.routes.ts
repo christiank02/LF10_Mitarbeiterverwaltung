@@ -12,9 +12,9 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'callback', component: CallbackComponent },
-  { path: 'employees', component: EmployeeListComponent, canActivate: [authGuard] },
-  { path: 'employees/:id', component: EmployeeDetailsComponent, canActivate: [authGuard] },
-  { path: 'qualifications', component: QualificationsComponent, canActivate: [authGuard] },
-  { path: 'qualifications/:id', component: QualificationDetailsComponent, canActivate: [authGuard] },
+  { path: 'mitarbeiter', component: EmployeeListComponent, canActivate: [authGuard] },
+  { path: 'mitarbeiter/:id', component: EmployeeDetailsComponent, canActivate: [authGuard] },
+  { path: 'qualifikationen', component: QualificationsComponent, canActivate: [authGuard] },
+  { path: 'qualifikationen/:id', component: QualificationDetailsComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

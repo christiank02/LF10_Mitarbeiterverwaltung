@@ -2,8 +2,8 @@
   <!-- Breadcrumb -->
   <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
-      <li class="breadcrumb-item"><a routerLink="/employees">Employees</a></li>
+      <li class="breadcrumb-item"><a routerLink="/">Startseite</a></li>
+      <li class="breadcrumb-item"><a routerLink="/employees">Mitarbeiter</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ employee?.firstName }} {{ employee?.lastName }}</li>
     </ol>
   </nav>
@@ -19,15 +19,15 @@
             </div>
             <div>
               <h1 class="h2 mb-1">{{ employee.firstName }} {{ employee.lastName }}</h1>
-              <p class="text-muted mb-0">Employee ID: {{ employee.id }}</p>
+              <p class="text-muted mb-0">Mitarbeiter-ID: {{ employee.id }}</p>
             </div>
           </div>
           <div>
             <button class="btn btn-outline-primary me-2" (click)="editEmployee()">
-              <i class="bi bi-pencil me-1"></i>Edit
+              <i class="bi bi-pencil me-1"></i>Bearbeiten
             </button>
             <button class="btn btn-outline-danger" (click)="deleteEmployee()">
-              <i class="bi bi-trash me-1"></i>Delete
+              <i class="bi bi-trash me-1"></i>Löschen
             </button>
           </div>
         </div>
@@ -40,17 +40,17 @@
       <div class="col-md-6 mb-4">
         <div class="card h-100">
           <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="bi bi-person-vcard me-2"></i>Contact Information</h5>
+            <h5 class="mb-0"><i class="bi bi-person-vcard me-2"></i>Kontakt Informationen</h5>
           </div>
           <div class="card-body">
             <div class="info-item">
               <i class="bi bi-telephone-fill text-primary me-2"></i>
-              <span class="fw-semibold">Phone:</span>
-              <span class="ms-2">{{ employee.phone || 'Not provided' }}</span>
+              <span class="fw-semibold">Telefon:</span>
+              <span class="ms-2">{{ employee.phone || 'Nicht angegeben' }}</span>
             </div>
             <div class="info-item">
               <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-              <span class="fw-semibold">Address:</span>
+              <span class="fw-semibold">Adresse:</span>
               <span class="ms-2">
                 {{ employee.street || '-' }}, {{ employee.postcode || '-' }} {{ employee.city || '-' }}
               </span>
@@ -63,20 +63,20 @@
       <div class="col-md-6 mb-4">
         <div class="card h-100">
           <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-award me-2"></i>Qualifications</h5>
+            <h5 class="mb-0"><i class="bi bi-award me-2"></i>Qualifikationen</h5>
             <button class="btn btn-sm btn-light" (click)="openSkillsModal()">
-              <i class="bi bi-plus-lg me-1"></i>Add
+              <i class="bi bi-plus-lg me-1"></i>Hinzufügen
             </button>
           </div>
           <div class="card-body">
             @if (!employee.skillSet || employee.skillSet.length === 0) {
-              <p class="text-muted text-center py-3">No qualifications added yet</p>
+              <p class="text-muted text-center py-3">Noch keine Qualifikationen hinzugefügt</p>
             } @else {
               <div class="skills-list">
                 @for (skill of employee.skillSet; track skill.skill) {
                   <div class="skill-badge">
                     <span>{{ skill.skill }}</span>
-                    <button class="btn-remove" (click)="deleteSkill(skill)" title="Remove skill">
+                    <button class="btn-remove" (click)="deleteSkill(skill)" title="Qualifikation entfernen">
                       <i class="bi bi-x"></i>
                     </button>
                   </div>
@@ -91,28 +91,28 @@
     <!-- Additional Details -->
     <div class="card">
       <div class="card-header bg-info text-white">
-        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Additional Information</h5>
+        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Zusätzliche Informationen</h5>
       </div>
       <div class="card-body">
         <div class="row">
           <div class="col-md-6">
             <div class="info-item">
-              <span class="fw-semibold">First Name:</span>
+              <span class="fw-semibold">Vorname:</span>
               <span class="ms-2">{{ employee.firstName }}</span>
             </div>
             <div class="info-item">
-              <span class="fw-semibold">Last Name:</span>
+              <span class="fw-semibold">Nachname:</span>
               <span class="ms-2">{{ employee.lastName }}</span>
             </div>
           </div>
           <div class="col-md-6">
             <div class="info-item">
-              <span class="fw-semibold">City:</span>
-              <span class="ms-2">{{ employee.city || 'Not provided' }}</span>
+              <span class="fw-semibold">Stadt:</span>
+              <span class="ms-2">{{ employee.city || 'Nicht angegeben' }}</span>
             </div>
             <div class="info-item">
-              <span class="fw-semibold">Postcode:</span>
-              <span class="ms-2">{{ employee.postcode || 'Not provided' }}</span>
+              <span class="fw-semibold">Postleitzahl:</span>
+              <span class="ms-2">{{ employee.postcode || 'Nicht angegeben' }}</span>
             </div>
           </div>
         </div>
@@ -128,15 +128,15 @@
     <div class="modal-content-custom">
       <div class="modal-header">
         <h5 class="modal-title">
-          <i class="bi bi-award me-2"></i>Add Qualification
+          <i class="bi bi-award me-2"></i>Qualifikation hinzufügen
         </h5>
         <button type="button" class="btn-close" (click)="closeSkillsModal()"></button>
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <label class="form-label fw-semibold">Select Qualification</label>
+          <label class="form-label fw-semibold">Qualifikation auswählen</label>
           <select class="form-select" [(ngModel)]="newSkill" style="width: 100%;">
-            <option value="">Choose a qualification...</option>
+            <option value="">Wählen Sie eine Qualifikation...</option>
             @for (qualification of availableQualifications; track qualification.id) {
               @if (!isSkillAlreadyAdded(qualification.skill)) {
                 <option [value]="qualification.skill">{{ qualification.skill }}</option>
@@ -146,9 +146,9 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeSkillsModal()">Cancel</button>
+        <button type="button" class="btn btn-secondary" (click)="closeSkillsModal()">Abbrechen</button>
         <button type="button" class="btn btn-primary" (click)="addSkill(); closeSkillsModal()" [disabled]="!newSkill">
-          Add
+          Hinzufügen
         </button>
       </div>
     </div>

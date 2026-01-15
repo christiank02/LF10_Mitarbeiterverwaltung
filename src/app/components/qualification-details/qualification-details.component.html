@@ -2,8 +2,8 @@
   <!-- Breadcrumb -->
   <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
-      <li class="breadcrumb-item"><a routerLink="/qualifications">Qualifications</a></li>
+      <li class="breadcrumb-item"><a routerLink="/">Startseite</a></li>
+      <li class="breadcrumb-item"><a routerLink="/qualifikationen">Qualifikationen</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ qualification?.skill || 'Details' }}</li>
     </ol>
   </nav>
@@ -18,7 +18,7 @@
           </div>
           <div>
             <h1 class="h2 mb-1">{{ qualification.skill }}</h1>
-            <p class="text-muted mb-0">Qualification ID: {{ qualification.id }}</p>
+            <p class="text-muted mb-0">Qualifikations-ID: {{ qualification.id }}</p>
           </div>
         </div>
       </div>
@@ -27,18 +27,18 @@
     <!-- Employees with this Qualification -->
     <div class="card">
       <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Employees with this Qualification ({{ employees.length }})</h5>
+        <h5 class="mb-0">Mitarbeiter mit dieser Qualifikation ({{ employees.length }})</h5>
       </div>
       <div class="card-body">
         @if (employees.length === 0) {
-          <p class="text-muted text-center py-4">No employees have this qualification yet</p>
+          <p class="text-muted text-center py-4">Noch keine Mitarbeiter haben diese Qualifikation</p>
         } @else {
           <div class="table-responsive">
             <table class="table table-hover mb-0">
               <thead class="table-light">
                 <tr>
-                  <th>Employee</th>
-                  <th>Actions</th>
+                  <th>Mitarbeiter</th>
+                  <th>Aktionen</th>
                 </tr>
               </thead>
               <tbody>
@@ -56,7 +56,7 @@
                     </td>
                     <td class="align-middle">
                       <button class="btn btn-sm btn-outline-primary" (click)="viewEmployee(employee); $event.stopPropagation()">
-                        <i class="bi bi-eye me-1"></i>View Details
+                        <i class="bi bi-eye me-1"></i>Details anzeigen
                       </button>
                     </td>
                   </tr>

@@ -236,7 +236,7 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   deleteEmployee() {
-    if (!confirm('Are you sure you want to delete this employee?')) return;
+    if (!confirm('Sind Sie sicher, dass Sie diesen Mitarbeiter löschen möchten?')) return;
 
     const token = this.authService.getAccessToken();
     this.http.delete(`http://localhost:8089/employees/${this.employeeId}`, {

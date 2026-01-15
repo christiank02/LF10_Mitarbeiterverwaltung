@@ -139,7 +139,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   deleteEmployee(employee: Employee) {
-    if (!confirm(`Are you sure you want to delete ${employee.firstName} ${employee.lastName}?`)) return;
+    if (!confirm(`Sind Sie sicher, dass Sie ${employee.firstName} ${employee.lastName} löschen möchten?`)) return;
 
     const token = this.authService.getAccessToken();
     this.http.delete(`http://localhost:8089/employees/${employee.id}`, {
@@ -203,7 +203,6 @@ export class EmployeeListComponent implements OnInit {
       .set('Authorization', `Bearer ${token}`);
 
     if (this.isEditMode && employee.id) {
-      // Update existing employee
       this.http.put(`http://localhost:8089/employees/${employee.id}`, requestBody, { headers }).subscribe({
         next: () => {
           this.fetchData();
