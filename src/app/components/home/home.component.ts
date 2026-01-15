@@ -45,7 +45,6 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Redirect to login if not logged in
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
     }
@@ -60,12 +59,10 @@ export class HomeComponent implements OnInit {
   }
 
   addNewEmployee() {
-    // TODO: Implement add employee functionality
     console.log('Add new employee clicked');
   }
 
   searchEmployee() {
-    // TODO: Implement search employee functionality
     console.log('Search employee clicked');
   }
 }

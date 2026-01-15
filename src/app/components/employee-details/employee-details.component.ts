@@ -19,12 +19,9 @@ export class EmployeeDetailsComponent implements OnInit {
   employee: Employee | null = null;
   employeeId: string | null = null;
 
-  // Skills modal
   showSkillsModal = false;
   newSkill = '';
   availableQualifications: Qualification[] = [];
-
-  // Edit modal
   showEditModal = false;
 
   constructor(

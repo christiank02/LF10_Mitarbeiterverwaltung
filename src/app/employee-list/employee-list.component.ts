@@ -211,7 +211,6 @@ export class EmployeeListComponent implements OnInit {
         error: (err) => console.error('Error updating employee:', err)
       });
     } else {
-      // Create new employee
       this.http.post('http://localhost:8089/employees', requestBody, { headers }).subscribe({
         next: () => {
           this.fetchData();
@@ -228,7 +227,6 @@ export class EmployeeListComponent implements OnInit {
     return (first + last).toUpperCase();
   }
 
-  // Skills management
   viewSkills(employee: Employee) {
     this.selectedEmployee = employee;
     this.fetchAvailableQualifications();
@@ -249,25 +247,21 @@ export class EmployeeListComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    // Find the qualification ID
     const qualification = this.availableQualifications.find(q => q.skill === this.newSkill.trim());
     if (!qualification || !qualification.id) {
       console.error('Qualification not found');
       return;
     }
 
-    // Add the skill to the employee's skillSet
     if (!this.selectedEmployee.skillSet) {
       this.selectedEmployee.skillSet = [];
     }
 
-    // Check if skill is not already in the list
     const alreadyExists = this.selectedEmployee.skillSet.some(s => s.skill === this.newSkill.trim());
     if (!alreadyExists) {
       this.selectedEmployee.skillSet.push({ skill: this.newSkill.trim(), id: qualification.id });
     }
 
-    // Build the skillSet array with IDs
     const skillSetIds = this.selectedEmployee.skillSet.map(skill => {
       if ('id' in skill && skill.id !== undefined) {
         return skill.id;
@@ -276,7 +270,6 @@ export class EmployeeListComponent implements OnInit {
       return qual?.id;
     }).filter((id): id is number => id !== undefined);
 
-    // Prepare the employee update body
     const requestBody = {
       lastName: this.selectedEmployee.lastName,
       firstName: this.selectedEmployee.firstName,
@@ -287,14 +280,13 @@ export class EmployeeListComponent implements OnInit {
       skillSet: skillSetIds
     };
 
-    // Update the entire employee via PUT
     this.http.put(`http://localhost:8089/employees/${this.selectedEmployee.id}`,
       requestBody,
       { headers }
     ).subscribe({
       next: () => {
         this.newSkill = '';
-        this.fetchData(); // Refresh to get updated data
+        this.fetchData();
       },
       error: (err) => console.error('Error adding skill:', err)
     });
@@ -312,12 +304,10 @@ export class EmployeeListComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    // Remove skill from employee's skillSet
     if (this.selectedEmployee.skillSet) {
       this.selectedEmployee.skillSet = this.selectedEmployee.skillSet.filter(s => s.skill !== skill.skill);
     }
 
-    // Build the skillSet array with IDs
     const skillSetIds = this.selectedEmployee.skillSet?.map(s => {
       if ('id' in s && s.id !== undefined) {
         return s.id;
@@ -326,7 +316,6 @@ export class EmployeeListComponent implements OnInit {
       return qual?.id;
     }).filter((id): id is number => id !== undefined) || [];
 
-    // Prepare the employee update body
     const requestBody = {
       lastName: this.selectedEmployee.lastName,
       firstName: this.selectedEmployee.firstName,
@@ -337,13 +326,12 @@ export class EmployeeListComponent implements OnInit {
       skillSet: skillSetIds
     };
 
-    // Update the entire employee via PUT
     this.http.put(`http://localhost:8089/employees/${this.selectedEmployee.id}`,
       requestBody,
       { headers }
     ).subscribe({
       next: () => {
-        this.fetchData(); // Refresh to get updated data
+        this.fetchData();
       },
       error: (err) => console.error('Error deleting skill:', err)
     });

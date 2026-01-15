@@ -1,5 +1,4 @@
 <div class="container-fluid p-4">
-  <!-- Breadcrumb -->
   <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a routerLink="/">Startseite</a></li>
@@ -9,7 +8,6 @@
   </nav>
 
   @if (qualification) {
-    <!-- Qualification Header -->
     <div class="card mb-4">
       <div class="card-body">
         <div class="d-flex align-items-center">
@@ -24,7 +22,6 @@
       </div>
     </div>
 
-    <!-- Employees with this Qualification -->
     <div class="card">
       <div class="card-header bg-primary text-white">
         <h5 class="mb-0">Mitarbeiter mit dieser Qualifikation ({{ employees.length }})</h5>

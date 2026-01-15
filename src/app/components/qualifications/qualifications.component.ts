@@ -18,15 +18,12 @@ export class QualificationsComponent implements OnInit {
   filteredQualifications: Qualification[] = [];
   paginatedQualifications: Qualification[] = [];
 
-  // Pagination
   currentPage = 1;
   itemsPerPage = 10;
   totalItems = 0;
 
-  // Search
   searchTerm = '';
 
-  // Modal
   showModal = false;
   isEditMode = false;
   currentQualification: Qualification = { skill: '' };
@@ -142,7 +139,6 @@ export class QualificationsComponent implements OnInit {
       .set('Authorization', `Bearer ${token}`);
 
     if (this.isEditMode) {
-      // Update qualification
       this.http.put(`http://localhost:8089/qualifications/${this.currentQualification.id}`,
         this.currentQualification,
         { headers }
@@ -154,7 +150,6 @@ export class QualificationsComponent implements OnInit {
         error: (err) => console.error('Error updating qualification:', err)
       });
     } else {
-      // Add new qualification
       this.http.post('http://localhost:8089/qualifications',
         this.currentQualification,
         { headers }

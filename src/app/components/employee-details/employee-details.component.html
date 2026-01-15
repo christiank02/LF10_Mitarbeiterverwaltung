@@ -1,5 +1,4 @@
 <div class="container-fluid p-4">
-  <!-- Breadcrumb -->
   <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a routerLink="/">Startseite</a></li>
@@ -9,7 +8,6 @@
   </nav>
 
   @if (employee) {
-    <!-- Employee Header Card -->
     <div class="card mb-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
@@ -34,9 +32,7 @@
       </div>
     </div>
 
-    <!-- Employee Information Grid -->
     <div class="row mb-4">
-      <!-- Contact Information -->
       <div class="col-md-6 mb-4">
         <div class="card h-100">
           <div class="card-header bg-primary text-white">
@@ -59,7 +55,6 @@
         </div>
       </div>
 
-      <!-- Skills/Qualifications -->
       <div class="col-md-6 mb-4">
         <div class="card h-100">
           <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
@@ -88,7 +83,6 @@
       </div>
     </div>
 
-    <!-- Additional Details -->
     <div class="card">
       <div class="card-header bg-info text-white">
         <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Zusätzliche Informationen</h5>
@@ -121,7 +115,6 @@
   }
 </div>
 
-<!-- Skills Modal -->
 @if (showSkillsModal && employee) {
   <div class="modal-backdrop" (click)="closeSkillsModal()"></div>
   <div class="modal-dialog-custom">

@@ -32,10 +32,8 @@ export class AuthService {
     this.oauthService.configure(this.authConfig);
 
     try {
-      // Discovery-Dokument laden
       await this.oauthService.loadDiscoveryDocument();
 
-      // Authentik gibt die Endpoints als Arrays zurück, wir müssen sie normalisieren
       const discoveryDoc = (this.oauthService as any).discoveryDocument;
       if (discoveryDoc) {
         const endpointFields = [
@@ -98,7 +96,6 @@ export class AuthService {
       const hasToken = this.hasValidToken();
       return sessionLoggedIn && hasToken;
     } catch (error) {
-      // Handle SessionStorage access errors (e.g., private browsing mode)
       console.error('SessionStorage access error:', error);
       return this.hasValidToken();
     }
