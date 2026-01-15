@@ -3,12 +3,12 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {Observable, of} from "rxjs";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Employee, Skill} from "../../Employee";
-import {AuthService} from "../../services/auth/auth.service";
 import {Qualification} from "../../Qualification";
 import {EmployeeModalComponent} from "../employee-modal/employee-modal.component";
 import {SearchService} from "../../services/search/search.service";
+import {EmployeeService} from "../../services/employee/employee.service";
+import {QualificationService} from "../../services/qualification/qualification.service";
 
 @Component({
     selector: 'app-employee-list',
@@ -40,8 +40,8 @@ export class EmployeeListComponent implements OnInit {
 
 
   constructor(
-    private http: HttpClient,
-    private authService: AuthService,
+    private employeeService: EmployeeService,
+    private qualificationService: QualificationService,
     private router: Router,
     private searchService: SearchService
   ) {
@@ -53,12 +53,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   fetchData() {
-    const token = this.authService.getAccessToken();
-    this.employees$ = this.http.get<Employee[]>('http://localhost:8089/employees', {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    });
+    this.employees$ = this.employeeService.getAll();
 
     this.employees$.subscribe(employees => {
       this.allEmployees = employees;
@@ -133,12 +128,7 @@ export class EmployeeListComponent implements OnInit {
   deleteEmployee(employee: Employee) {
     if (!confirm(`Sind Sie sicher, dass Sie ${employee.firstName} ${employee.lastName} löschen möchten?`)) return;
 
-    const token = this.authService.getAccessToken();
-    this.http.delete(`http://localhost:8089/employees/${employee.id}`, {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    }).subscribe({
+    this.employeeService.delete(employee.id!).subscribe({
       next: () => this.fetchData(),
       error: (err) => console.error('Error deleting employee:', err)
     });
@@ -152,12 +142,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   fetchAvailableQualifications() {
-    const token = this.authService.getAccessToken();
-    this.http.get<Qualification[]>('http://localhost:8089/qualifications', {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    }).subscribe({
+    this.qualificationService.getAll().subscribe({
       next: (data) => {
         this.availableQualifications = data;
       },
@@ -171,31 +156,10 @@ export class EmployeeListComponent implements OnInit {
   }
 
   onEmployeeSave(employee: Employee) {
-    const skillSetIds = employee.skillSet?.map(skill => {
-      if ('id' in skill && skill.id !== undefined) {
-        return skill.id;
-      }
-      const qualification = this.availableQualifications.find(q => q.skill === skill.skill);
-      return qualification?.id;
-    }).filter((id): id is number => id !== undefined) || [];
-
-    const requestBody = {
-      lastName: employee.lastName,
-      firstName: employee.firstName,
-      street: employee.street || '',
-      postcode: employee.postcode || '',
-      city: employee.city || '',
-      phone: employee.phone || '',
-      skillSet: skillSetIds
-    };
-
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
+    const requestBody = this.employeeService.prepareEmployeeData(employee, this.availableQualifications);
 
     if (this.isEditMode && employee.id) {
-      this.http.put(`http://localhost:8089/employees/${employee.id}`, requestBody, { headers }).subscribe({
+      this.employeeService.update(employee.id, requestBody).subscribe({
         next: () => {
           this.fetchData();
           this.closeAddEmployeeModal();
@@ -203,7 +167,7 @@ export class EmployeeListComponent implements OnInit {
         error: (err) => console.error('Error updating employee:', err)
       });
     } else {
-      this.http.post('http://localhost:8089/employees', requestBody, { headers }).subscribe({
+      this.employeeService.create(requestBody).subscribe({
         next: () => {
           this.fetchData();
           this.closeAddEmployeeModal();
@@ -234,11 +198,6 @@ export class EmployeeListComponent implements OnInit {
   addSkill() {
     if (!this.newSkill.trim() || !this.selectedEmployee) return;
 
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
-
     const qualification = this.availableQualifications.find(q => q.skill === this.newSkill.trim());
     if (!qualification || !qualification.id) {
       console.error('Qualification not found');
@@ -254,28 +213,9 @@ export class EmployeeListComponent implements OnInit {
       this.selectedEmployee.skillSet.push({ skill: this.newSkill.trim(), id: qualification.id });
     }
 
-    const skillSetIds = this.selectedEmployee.skillSet.map(skill => {
-      if ('id' in skill && skill.id !== undefined) {
-        return skill.id;
-      }
-      const qual = this.availableQualifications.find(q => q.skill === skill.skill);
-      return qual?.id;
-    }).filter((id): id is number => id !== undefined);
+    const requestBody = this.employeeService.prepareEmployeeData(this.selectedEmployee, this.availableQualifications);
 
-    const requestBody = {
-      lastName: this.selectedEmployee.lastName,
-      firstName: this.selectedEmployee.firstName,
-      street: this.selectedEmployee.street || '',
-      postcode: this.selectedEmployee.postcode || '',
-      city: this.selectedEmployee.city || '',
-      phone: this.selectedEmployee.phone || '',
-      skillSet: skillSetIds
-    };
-
-    this.http.put(`http://localhost:8089/employees/${this.selectedEmployee.id}`,
-      requestBody,
-      { headers }
-    ).subscribe({
+    this.employeeService.update(this.selectedEmployee.id!, requestBody).subscribe({
       next: () => {
         this.newSkill = '';
         this.fetchData();
@@ -291,37 +231,13 @@ export class EmployeeListComponent implements OnInit {
   deleteSkill(skill: Skill) {
     if (!this.selectedEmployee || !skill.id) return;
 
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
-
     if (this.selectedEmployee.skillSet) {
       this.selectedEmployee.skillSet = this.selectedEmployee.skillSet.filter(s => s.skill !== skill.skill);
     }
 
-    const skillSetIds = this.selectedEmployee.skillSet?.map(s => {
-      if ('id' in s && s.id !== undefined) {
-        return s.id;
-      }
-      const qual = this.availableQualifications.find(q => q.skill === s.skill);
-      return qual?.id;
-    }).filter((id): id is number => id !== undefined) || [];
+    const requestBody = this.employeeService.prepareEmployeeData(this.selectedEmployee, this.availableQualifications);
 
-    const requestBody = {
-      lastName: this.selectedEmployee.lastName,
-      firstName: this.selectedEmployee.firstName,
-      street: this.selectedEmployee.street || '',
-      postcode: this.selectedEmployee.postcode || '',
-      city: this.selectedEmployee.city || '',
-      phone: this.selectedEmployee.phone || '',
-      skillSet: skillSetIds
-    };
-
-    this.http.put(`http://localhost:8089/employees/${this.selectedEmployee.id}`,
-      requestBody,
-      { headers }
-    ).subscribe({
+    this.employeeService.update(this.selectedEmployee.id!, requestBody).subscribe({
       next: () => {
         this.fetchData();
       },

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { Subscription } from 'rxjs';
 
@@ -17,8 +17,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   private authSubscription?: Subscription;
 
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -61,7 +60,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout();
     this.showProfileMenu = false;
-    this.router.navigate(['/login']);
+    // OAuth Service redirects to postLogoutRedirectUri automatically
   }
 
   goToSettings() {

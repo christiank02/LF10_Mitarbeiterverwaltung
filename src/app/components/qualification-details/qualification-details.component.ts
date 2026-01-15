@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Qualification } from '../../Qualification';
-import { AuthService } from '../../services/auth/auth.service';
 import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
+import { QualificationService } from '../../services/qualification/qualification.service';
 
 interface EmployeeBasic {
   id: number;
@@ -34,8 +33,7 @@ export class QualificationDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    private authService: AuthService
+    private qualificationService: QualificationService
   ) {}
 
   ngOnInit() {
@@ -46,12 +44,7 @@ export class QualificationDetailsComponent implements OnInit {
   }
 
   fetchQualificationDetails() {
-    const token = this.authService.getAccessToken();
-    this.http.get<QualificationDetailsResponse>(`http://localhost:8089/qualifications/${this.qualificationId}/employees`, {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    }).subscribe({
+    this.qualificationService.getDetailsWithEmployees(this.qualificationId!).subscribe({
       next: (data) => {
         this.qualification = data.qualification;
         this.employees = data.employees;
@@ -79,15 +72,7 @@ export class QualificationDetailsComponent implements OnInit {
   }
 
   onQualificationSave(qualification: Qualification) {
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
-
-    this.http.put(`http://localhost:8089/qualifications/${qualification.id}`,
-      qualification,
-      { headers }
-    ).subscribe({
+    this.qualificationService.update(qualification.id!, qualification).subscribe({
       next: () => {
         this.fetchQualificationDetails();
         this.closeEditModal();
@@ -99,12 +84,7 @@ export class QualificationDetailsComponent implements OnInit {
   deleteQualification() {
     if (!confirm(`Sind Sie sicher, dass Sie "${this.qualification?.skill}" löschen möchten?`)) return;
 
-    const token = this.authService.getAccessToken();
-    this.http.delete(`http://localhost:8089/qualifications/${this.qualificationId}`, {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    }).subscribe({
+    this.qualificationService.delete(this.qualificationId!).subscribe({
       next: () => this.router.navigate(['/qualifications']),
       error: (err) => console.error('Error deleting qualification:', err)
     });

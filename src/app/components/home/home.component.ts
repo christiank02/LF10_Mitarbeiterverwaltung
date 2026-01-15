@@ -2,13 +2,14 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Employee } from '../../Employee';
 import { Qualification } from '../../Qualification';
 import { SearchService } from '../../services/search/search.service';
 import { EmployeeModalComponent } from '../employee-modal/employee-modal.component';
 import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
+import { EmployeeService } from '../../services/employee/employee.service';
+import { QualificationService } from '../../services/qualification/qualification.service';
 
 @Component({
     selector: 'app-home',
@@ -28,7 +29,6 @@ export class HomeComponent implements OnInit {
 
   showQualificationModal = false;
 
-  // Statistics
   totalEmployees = 0;
   totalQualifications = 0;
   recentEmployees: Employee[] = [];
@@ -36,26 +36,17 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private http: HttpClient,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private employeeService: EmployeeService,
+    private qualificationService: QualificationService
   ) {}
 
   ngOnInit() {
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login']);
-    } else {
-      this.loadStatistics();
-    }
+    this.loadStatistics();
   }
 
   loadStatistics() {
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
-
-    // Load employees for statistics
-    this.http.get<Employee[]>('http://localhost:8089/employees', { headers }).subscribe({
+    this.employeeService.getAll().subscribe({
       next: (employees) => {
         this.totalEmployees = employees.length;
         // Get last 5 employees (assuming higher IDs are newer)
@@ -66,8 +57,7 @@ export class HomeComponent implements OnInit {
       error: (err) => console.error('Error loading employees:', err)
     });
 
-    // Load qualifications for statistics
-    this.http.get<Qualification[]>('http://localhost:8089/qualifications', { headers }).subscribe({
+    this.qualificationService.getAll().subscribe({
       next: (qualifications) => {
         this.totalQualifications = qualifications.length;
       },
@@ -104,12 +94,7 @@ export class HomeComponent implements OnInit {
   }
 
   fetchAvailableQualifications() {
-    const token = this.authService.getAccessToken();
-    this.http.get<Qualification[]>('http://localhost:8089/qualifications', {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    }).subscribe({
+    this.qualificationService.getAll().subscribe({
       next: (data) => {
         this.availableQualifications = data;
       },
@@ -122,33 +107,11 @@ export class HomeComponent implements OnInit {
   }
 
   onEmployeeSave(employee: Employee) {
-    const skillSetIds = employee.skillSet?.map(skill => {
-      if ('id' in skill && skill.id !== undefined) {
-        return skill.id;
-      }
-      const qualification = this.availableQualifications.find(q => q.skill === skill.skill);
-      return qualification?.id;
-    }).filter((id): id is number => id !== undefined) || [];
+    const requestBody = this.employeeService.prepareEmployeeData(employee, this.availableQualifications);
 
-    const requestBody = {
-      lastName: employee.lastName,
-      firstName: employee.firstName,
-      street: employee.street || '',
-      postcode: employee.postcode || '',
-      city: employee.city || '',
-      phone: employee.phone || '',
-      skillSet: skillSetIds
-    };
-
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
-
-    this.http.post('http://localhost:8089/employees', requestBody, { headers }).subscribe({
+    this.employeeService.create(requestBody).subscribe({
       next: () => {
         this.closeEmployeeModal();
-        // Optional: Zeige Erfolgsmeldung oder navigiere zur Employee-Liste
         this.router.navigate(['/employees']);
       },
       error: (err) => console.error('Error adding employee:', err)
@@ -160,15 +123,9 @@ export class HomeComponent implements OnInit {
   }
 
   onQualificationSave(qualification: Qualification) {
-    const token = this.authService.getAccessToken();
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${token}`);
-
-    this.http.post('http://localhost:8089/qualifications', qualification, { headers }).subscribe({
+    this.qualificationService.create(qualification).subscribe({
       next: () => {
         this.closeQualificationModal();
-        // Optional: Zeige Erfolgsmeldung oder navigiere zur Qualifications-Liste
         this.router.navigate(['/qualifications']);
       },
       error: (err) => console.error('Error adding qualification:', err)
@@ -183,12 +140,7 @@ export class HomeComponent implements OnInit {
   }
 
   loadEmployees() {
-    const token = this.authService.getAccessToken();
-    this.http.get<Employee[]>('http://localhost:8089/employees', {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    }).subscribe(employees => {
+    this.employeeService.getAll().subscribe(employees => {
       this.allEmployees = employees;
       this.applySearchFilter();
     });
