@@ -20,20 +20,6 @@
 
     <div class="topbar-right">
       @if (isLoggedIn) {
-        <div class="profile-dropdown">
-          <button class="topbar-icon-btn" (click)="toggleProfileMenu()" title="Profil">
-            <i class="bi bi-person-circle"></i>
-          </button>
-          @if (showProfileMenu) {
-            <div class="dropdown-menu">
-              <button class="dropdown-item" (click)="goToSettings()">
-                <i class="bi bi-gear"></i>
-                Einstellungen
-              </button>
-            </div>
-          }
-        </div>
-
         <button class="topbar-btn" (click)="logout()" title="Abmelden">
           <i class="bi bi-box-arrow-right"></i>
           Abmelden
