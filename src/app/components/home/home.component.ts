@@ -51,11 +51,11 @@ export class HomeComponent implements OnInit {
   }
 
   navigateToEmployees() {
-    this.router.navigate(['/mitarbeiter']);
+    this.router.navigate(['/employees']);
   }
 
   navigateToQualifications() {
-    this.router.navigate(['/qualifikationen']);
+    this.router.navigate(['/qualifications']);
   }
 
   addNewEmployee() {
