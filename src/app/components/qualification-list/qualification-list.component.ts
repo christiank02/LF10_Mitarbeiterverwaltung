@@ -8,13 +8,13 @@ import { QualificationService } from '../../services/qualification/qualification
 import { EmployeeService } from '../../services/employee/employee.service';
 
 @Component({
-  selector: 'app-qualifications',
+  selector: 'app-qualification-list',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, QualificationModalComponent],
-  templateUrl: './qualifications.component.html',
-  styleUrl: './qualifications.component.css'
+  templateUrl: './qualification-list.component.html',
+  styleUrl: './qualification-list.component.css'
 })
-export class QualificationsComponent implements OnInit {
+export class QualificationListComponent implements OnInit {
   qualifications: Qualification[] = [];
   filteredQualifications: Qualification[] = [];
   paginatedQualifications: Qualification[] = [];

@@ -4,9 +4,9 @@
 # 3. Links auf Directory --> Token and App Passwords
 # 4. Klicken Sie auf "Create", wählen Sie einen Namen, wählen Sie john aus, wählen Sie App Password, deaktiviere expire klicken Sie auf "Create"
 # 5. Kopieren Sie das generierte App-Passwort und verwenden Sie es im folgenden Befehl, um ein Bearer-Token zu erhalten.
-@app_password=X4Ffjc3mfTZg3caRkEtX2x1Gh94u5O9JVdOnnAsoKv4Cr7voMo4O35F89UCC
+@app_password=encoway
 ###
-POST http://localhost:9000/application/o/token/
+POST http://localhost:9001/application/o/token/
 Content-Type: application/x-www-form-urlencoded
 
 grant_type = password &

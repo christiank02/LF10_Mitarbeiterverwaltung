@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 import { Qualification } from '../../Qualification';
 import { AuthService } from '../auth/auth.service';
+import { ToastService } from '../toast/toast.service';
 
 interface QualificationDetailsResponse {
   qualification: Qualification;
@@ -17,7 +18,8 @@ export class QualificationService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastService: ToastService
   ) {}
 
   /**
@@ -63,7 +65,13 @@ export class QualificationService {
   create(qualification: Qualification): Observable<Qualification> {
     return this.http.post<Qualification>(this.baseUrl, qualification, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(() => this.toastService.success('Qualifikation erfolgreich erstellt')),
+      catchError(error => {
+        this.toastService.error('Fehler beim Erstellen der Qualifikation');
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -72,7 +80,13 @@ export class QualificationService {
   update(id: string | number, qualification: Qualification): Observable<Qualification> {
     return this.http.put<Qualification>(`${this.baseUrl}/${id}`, qualification, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(() => this.toastService.success('Qualifikation erfolgreich aktualisiert')),
+      catchError(error => {
+        this.toastService.error('Fehler beim Aktualisieren der Qualifikation');
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -81,7 +95,13 @@ export class QualificationService {
   delete(id: string | number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(() => this.toastService.success('Qualifikation erfolgreich gelöscht')),
+      catchError(error => {
+        this.toastService.error('Fehler beim Löschen der Qualifikation');
+        return throwError(() => error);
+      })
+    );
   }
 }
 

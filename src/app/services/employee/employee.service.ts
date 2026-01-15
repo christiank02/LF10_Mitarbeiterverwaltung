@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 import { Employee } from '../../Employee';
 import { AuthService } from '../auth/auth.service';
+import { ToastService } from '../toast/toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class EmployeeService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastService: ToastService
   ) {}
 
   /**
@@ -57,7 +59,13 @@ export class EmployeeService {
   }): Observable<Employee> {
     return this.http.post<Employee>(this.baseUrl, employee, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(() => this.toastService.success('Mitarbeiter erfolgreich erstellt')),
+      catchError(error => {
+        this.toastService.error('Fehler beim Erstellen des Mitarbeiters');
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -74,7 +82,13 @@ export class EmployeeService {
   }): Observable<Employee> {
     return this.http.put<Employee>(`${this.baseUrl}/${id}`, employee, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(() => this.toastService.success('Mitarbeiter erfolgreich aktualisiert')),
+      catchError(error => {
+        this.toastService.error('Fehler beim Aktualisieren des Mitarbeiters');
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -83,7 +97,13 @@ export class EmployeeService {
   delete(id: string | number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(() => this.toastService.success('Mitarbeiter erfolgreich gelöscht')),
+      catchError(error => {
+        this.toastService.error('Fehler beim Löschen des Mitarbeiters');
+        return throwError(() => error);
+      })
+    );
   }
 
   /**

@@ -125,12 +125,12 @@
       <div class="input-group">
         <span class="input-group-text border-0 bg-white"><i class="bi bi-search"></i></span>
         <input
+          #searchInput
           type="text"
           class="form-control border-0 shadow-none"
           placeholder="Mitarbeiter suchen (Name, Stadt, Qualifikationen)..."
           [(ngModel)]="searchTerm"
           (input)="onSearchChange()"
-          autofocus
         />
         <button type="button" class="btn-close-minimal" (click)="closeSearchModal()">
           <i class="bi bi-x-lg"></i>

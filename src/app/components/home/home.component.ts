@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
@@ -19,6 +19,8 @@ import { QualificationService } from '../../services/qualification/qualification
     styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>;
+
   showSearchModal = false;
   searchTerm = '';
   allEmployees: Employee[] = [];
@@ -137,6 +139,11 @@ export class HomeComponent implements OnInit {
     this.searchTerm = '';
     this.filteredEmployees = [];
     this.loadEmployees();
+
+    // Fokussiere das Suchfeld automatisch
+    setTimeout(() => {
+      this.searchInput?.nativeElement.focus();
+    }, 0);
   }
 
   loadEmployees() {
