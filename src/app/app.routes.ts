@@ -6,6 +6,7 @@ import {HomeComponent} from "./components/home/home.component";
 import {QualificationListComponent} from "./components/qualification-list/qualification-list.component";
 import {EmployeeDetailsComponent} from "./components/employee-details/employee-details.component";
 import {QualificationDetailsComponent} from "./components/qualification-details/qualification-details.component";
+import {SeederComponent} from "./components/seeder/seeder.component";
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [authGuard] },
@@ -14,5 +15,6 @@ export const routes: Routes = [
   { path: 'employees/:id', component: EmployeeDetailsComponent, canActivate: [authGuard] },
   { path: 'qualifications', component: QualificationListComponent, canActivate: [authGuard] },
   { path: 'qualifications/:id', component: QualificationDetailsComponent, canActivate: [authGuard] },
+  { path: 'seed', component: SeederComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];
