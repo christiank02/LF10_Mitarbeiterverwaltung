@@ -5,11 +5,12 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Qualification } from '../../Qualification';
 import { AuthService } from '../../services/auth/auth.service';
+import { QualificationModalComponent } from '../qualification-modal/qualification-modal.component';
 
 @Component({
   selector: 'app-qualifications',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, QualificationModalComponent],
   templateUrl: './qualifications.component.html',
   styleUrl: './qualifications.component.css'
 })
@@ -27,7 +28,7 @@ export class QualificationsComponent implements OnInit {
 
   showModal = false;
   isEditMode = false;
-  currentQualification: Qualification = { skill: '' };
+  currentQualification: Qualification | null = null;
 
   constructor(
     private http: HttpClient,
@@ -138,32 +139,30 @@ export class QualificationsComponent implements OnInit {
 
   openAddModal() {
     this.isEditMode = false;
-    this.currentQualification = { skill: '' };
+    this.currentQualification = null;
     this.showModal = true;
   }
 
   openEditModal(qualification: Qualification) {
     this.isEditMode = true;
-    this.currentQualification = { ...qualification };
+    this.currentQualification = qualification;
     this.showModal = true;
   }
 
   closeModal() {
     this.showModal = false;
-    this.currentQualification = { skill: '' };
+    this.currentQualification = null;
   }
 
-  saveQualification() {
-    if (!this.currentQualification.skill.trim()) return;
-
+  onQualificationSave(qualification: Qualification) {
     const token = this.authService.getAccessToken();
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${token}`);
 
-    if (this.isEditMode) {
-      this.http.put(`http://localhost:8089/qualifications/${this.currentQualification.id}`,
-        this.currentQualification,
+    if (this.isEditMode && qualification.id) {
+      this.http.put(`http://localhost:8089/qualifications/${qualification.id}`,
+        qualification,
         { headers }
       ).subscribe({
         next: () => {
@@ -174,7 +173,7 @@ export class QualificationsComponent implements OnInit {
       });
     } else {
       this.http.post('http://localhost:8089/qualifications',
-        this.currentQualification,
+        qualification,
         { headers }
       ).subscribe({
         next: () => {

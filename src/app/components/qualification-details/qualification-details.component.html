@@ -10,13 +10,23 @@
   @if (qualification) {
     <div class="card mb-4">
       <div class="card-body">
-        <div class="d-flex align-items-center">
-          <div class="qualification-icon me-4">
-            <i class="bi bi-award-fill"></i>
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="d-flex align-items-center">
+            <div class="qualification-icon me-4">
+              <i class="bi bi-award-fill"></i>
+            </div>
+            <div>
+              <h1 class="h2 mb-1">{{ qualification.skill }}</h1>
+              <p class="text-muted mb-0">Qualifikations-ID: {{ qualification.id }}</p>
+            </div>
           </div>
           <div>
-            <h1 class="h2 mb-1">{{ qualification.skill }}</h1>
-            <p class="text-muted mb-0">Qualifikations-ID: {{ qualification.id }}</p>
+            <button class="btn btn-outline-primary me-2" (click)="editQualification()">
+              <i class="bi bi-pencil me-1"></i>Bearbeiten
+            </button>
+            <button class="btn btn-outline-danger" (click)="deleteQualification()">
+              <i class="bi bi-trash me-1"></i>Löschen
+            </button>
           </div>
         </div>
       </div>
@@ -66,3 +76,12 @@
     </div>
   }
 </div>
+
+<app-qualification-modal
+  [show]="showEditModal"
+  [isEditMode]="true"
+  [qualification]="qualification"
+  (close)="closeEditModal()"
+  (save)="onQualificationSave($event)"
+></app-qualification-modal>
+

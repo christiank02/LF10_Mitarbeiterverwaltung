@@ -113,35 +113,11 @@
   </div>
 </div>
 
-@if (showModal) {
-  <div class="modal-backdrop" (click)="closeModal()"></div>
-  <div class="modal-dialog-custom">
-    <div class="modal-content-custom">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          <i class="bi bi-award me-2"></i>{{ isEditMode ? 'Bearbeiten' : 'Hinzufügen' }} Qualifikation
-        </h5>
-        <button type="button" class="btn-close" (click)="closeModal()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Qualifikationsname</label>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Qualifikationsname eingeben..."
-            [(ngModel)]="currentQualification.skill"
-            (keyup.enter)="saveQualification()"
-            autofocus
-          />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModal()">Abbrechen</button>
-        <button type="button" class="btn btn-primary" (click)="saveQualification()" [disabled]="!currentQualification.skill.trim()">
-          {{ isEditMode ? 'Aktualisieren' : 'Hinzufügen' }}
-        </button>
-      </div>
-    </div>
-  </div>
-}
+<app-qualification-modal
+  [show]="showModal"
+  [isEditMode]="isEditMode"
+  [qualification]="currentQualification"
+  (close)="closeModal()"
+  (save)="onQualificationSave($event)"
+></app-qualification-modal>
+
