@@ -60,7 +60,6 @@ export class EmployeeModalComponent implements OnChanges {
       this.selectedQualificationToAdd = '';
     }
 
-    // Fokus setzen wenn Modal geöffnet wird
     if (changes['show'] && this.show) {
       setTimeout(() => {
         this.firstNameInput?.nativeElement?.focus();

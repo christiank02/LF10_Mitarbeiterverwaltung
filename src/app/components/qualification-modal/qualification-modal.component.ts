@@ -33,7 +33,6 @@ export class QualificationModalComponent implements OnChanges {
       this.touched = {};
     }
 
-    // Fokus setzen wenn Modal geöffnet wird
     if (changes['show'] && this.show) {
       setTimeout(() => {
         this.skillInput?.nativeElement?.focus();
