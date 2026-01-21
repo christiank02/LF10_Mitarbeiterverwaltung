@@ -16,64 +16,112 @@
             <input
               type="text"
               class="form-control"
+              [class.is-invalid]="hasError('firstName')"
               placeholder="Vorname"
               [(ngModel)]="currentEmployee.firstName"
+              (blur)="validateField('firstName')"
               autofocus
             />
+            @if (hasError('firstName')) {
+              <div class="invalid-feedback d-block">
+                {{ getError('firstName') }}
+              </div>
+            }
           </div>
           <div class="col-md-6">
             <label class="form-label">Nachname <span class="text-danger">*</span></label>
             <input
               type="text"
               class="form-control"
+              [class.is-invalid]="hasError('lastName')"
               placeholder="Nachname"
               [(ngModel)]="currentEmployee.lastName"
+              (blur)="validateField('lastName')"
             />
+            @if (hasError('lastName')) {
+              <div class="invalid-feedback d-block">
+                {{ getError('lastName') }}
+              </div>
+            }
           </div>
         </div>
 
         <div class="row g-3 mb-3">
           <div class="col-md-12">
-            <label class="form-label">Straße</label>
+            <label class="form-label">Straße <span class="text-danger">*</span></label>
             <input
               type="text"
               class="form-control"
+              [class.is-invalid]="hasError('street')"
               placeholder="Straße"
               [(ngModel)]="currentEmployee.street"
+              (blur)="validateField('street')"
+              required
             />
+            @if (hasError('street')) {
+              <div class="invalid-feedback d-block">
+                {{ getError('street') }}
+              </div>
+            }
           </div>
         </div>
 
         <div class="row g-3 mb-3">
           <div class="col-md-4">
-            <label class="form-label">PLZ</label>
+            <label class="form-label">PLZ <span class="text-danger">*</span></label>
             <input
               type="text"
               class="form-control"
-              placeholder="PLZ"
+              [class.is-invalid]="hasError('postcode')"
+              placeholder="PLZ (5 Ziffern)"
               [(ngModel)]="currentEmployee.postcode"
+              (blur)="validateField('postcode')"
+              maxlength="5"
+              pattern="[0-9]{5}"
+              required
             />
+            @if (hasError('postcode')) {
+              <div class="invalid-feedback d-block">
+                {{ getError('postcode') }}
+              </div>
+            }
           </div>
           <div class="col-md-8">
-            <label class="form-label">Stadt</label>
+            <label class="form-label">Stadt <span class="text-danger">*</span></label>
             <input
               type="text"
               class="form-control"
+              [class.is-invalid]="hasError('city')"
               placeholder="Stadt"
               [(ngModel)]="currentEmployee.city"
+              (blur)="validateField('city')"
+              required
             />
+            @if (hasError('city')) {
+              <div class="invalid-feedback d-block">
+                {{ getError('city') }}
+              </div>
+            }
           </div>
         </div>
 
         <div class="row g-3 mb-3">
           <div class="col-md-12">
-            <label class="form-label">Telefon</label>
+            <label class="form-label">Telefon <span class="text-danger">*</span></label>
             <input
-              type="text"
+              type="tel"
               class="form-control"
+              [class.is-invalid]="hasError('phone')"
               placeholder="Telefonnummer"
               [(ngModel)]="currentEmployee.phone"
+              (blur)="validateField('phone')"
+              required
             />
+            @if (hasError('phone')) {
+              <div class="invalid-feedback d-block">
+                {{ getError('phone') }}
+              </div>
+            }
           </div>
         </div>
 
@@ -121,7 +169,12 @@
           type="button"
           class="btn btn-primary"
           (click)="onSave()"
-          [disabled]="!currentEmployee.firstName?.trim() || !currentEmployee.lastName?.trim()"
+          [disabled]="!currentEmployee.firstName?.trim() ||
+                      !currentEmployee.lastName?.trim() ||
+                      !currentEmployee.street?.trim() ||
+                      !currentEmployee.postcode?.trim() ||
+                      !currentEmployee.city?.trim() ||
+                      !currentEmployee.phone?.trim()"
         >
           <i class="bi" [class.bi-check-lg]="!isEditMode" [class.bi-save]="isEditMode"></i>
           <span class="ms-1">{{ isEditMode ? 'Speichern' : 'Hinzufügen' }}</span>

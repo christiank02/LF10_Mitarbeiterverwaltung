@@ -30,6 +30,8 @@ export class EmployeeModalComponent implements OnChanges {
   };
 
   selectedQualificationToAdd = '';
+  validationErrors: { [key: string]: string } = {};
+  touched: { [key: string]: boolean } = {};
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['employee'] && this.employee) {
@@ -62,11 +64,110 @@ export class EmployeeModalComponent implements OnChanges {
   }
 
   onSave() {
-    if (!this.currentEmployee.firstName?.trim() || !this.currentEmployee.lastName?.trim()) {
-      alert('Please fill in at least first name and last name');
+    this.touched = {
+      firstName: true,
+      lastName: true,
+      street: true,
+      postcode: true,
+      city: true,
+      phone: true
+    };
+
+    this.validateAllFields();
+
+    if (Object.keys(this.validationErrors).length > 0) {
       return;
     }
+
     this.save.emit(this.currentEmployee);
+  }
+
+  validateField(fieldName: string) {
+    this.touched[fieldName] = true;
+
+    switch (fieldName) {
+      case 'firstName':
+        if (!this.currentEmployee.firstName?.trim()) {
+          this.validationErrors['firstName'] = 'Vorname ist erforderlich';
+        } else {
+          delete this.validationErrors['firstName'];
+        }
+        break;
+      case 'lastName':
+        if (!this.currentEmployee.lastName?.trim()) {
+          this.validationErrors['lastName'] = 'Nachname ist erforderlich';
+        } else {
+          delete this.validationErrors['lastName'];
+        }
+        break;
+      case 'street':
+        if (!this.currentEmployee.street?.trim()) {
+          this.validationErrors['street'] = 'Straße ist erforderlich';
+        } else {
+          delete this.validationErrors['street'];
+        }
+        break;
+      case 'postcode':
+        if (!this.currentEmployee.postcode?.trim()) {
+          this.validationErrors['postcode'] = 'Postleitzahl ist erforderlich';
+        } else if (!/^\d{5}$/.test(this.currentEmployee.postcode.trim())) {
+          this.validationErrors['postcode'] = 'Bitte geben Sie eine gültige 5-stellige PLZ ein';
+        } else {
+          delete this.validationErrors['postcode'];
+        }
+        break;
+      case 'city':
+        if (!this.currentEmployee.city?.trim()) {
+          this.validationErrors['city'] = 'Stadt ist erforderlich';
+        } else {
+          delete this.validationErrors['city'];
+        }
+        break;
+      case 'phone':
+        if (!this.currentEmployee.phone?.trim()) {
+          this.validationErrors['phone'] = 'Telefonnummer ist erforderlich';
+        } else if (!/^[0-9+\-\s()]+$/.test(this.currentEmployee.phone.trim())) {
+          this.validationErrors['phone'] = 'Bitte geben Sie eine gültige Telefonnummer ein';
+        } else {
+          delete this.validationErrors['phone'];
+        }
+        break;
+    }
+  }
+
+  validateAllFields() {
+    this.validationErrors = {};
+
+    if (!this.currentEmployee.firstName?.trim()) {
+      this.validationErrors['firstName'] = 'Vorname ist erforderlich';
+    }
+    if (!this.currentEmployee.lastName?.trim()) {
+      this.validationErrors['lastName'] = 'Nachname ist erforderlich';
+    }
+    if (!this.currentEmployee.street?.trim()) {
+      this.validationErrors['street'] = 'Straße ist erforderlich';
+    }
+    if (!this.currentEmployee.postcode?.trim()) {
+      this.validationErrors['postcode'] = 'Postleitzahl ist erforderlich';
+    } else if (!/^\d{5}$/.test(this.currentEmployee.postcode.trim())) {
+      this.validationErrors['postcode'] = 'Bitte geben Sie eine gültige 5-stellige PLZ ein';
+    }
+    if (!this.currentEmployee.city?.trim()) {
+      this.validationErrors['city'] = 'Stadt ist erforderlich';
+    }
+    if (!this.currentEmployee.phone?.trim()) {
+      this.validationErrors['phone'] = 'Telefonnummer ist erforderlich';
+    } else if (!/^[0-9+\-\s()]+$/.test(this.currentEmployee.phone.trim())) {
+      this.validationErrors['phone'] = 'Bitte geben Sie eine gültige Telefonnummer ein';
+    }
+  }
+
+  hasError(fieldName: string): boolean {
+    return this.touched[fieldName] && !!this.validationErrors[fieldName];
+  }
+
+  getError(fieldName: string): string {
+    return this.validationErrors[fieldName] || '';
   }
 
   addQualificationFromDropdown() {
