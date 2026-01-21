@@ -1,14 +1,18 @@
 <div class="container-fluid p-4">
   <div class="row mb-4">
     <div class="col-12 dashboard-header">
-      <h1 class="display-4 fw-bold">STARTSEITE</h1>
-      <p class="lead">Willkommen im Employment Management System.</p>
+      <h1 class="display-4 fw-bold">Willkommen zurück!</h1>
+      <p class="lead">Verwalten Sie Ihre Mitarbeiter und Qualifikationen effizient an einem Ort.</p>
     </div>
   </div>
 
   <div class="row mb-4">
     <div class="col-6">
-      <div class="card shadow-sm clickable-card" (click)="navigateToEmployees()">
+      <div class="card shadow-sm clickable-card"
+           (click)="navigateToEmployees()"
+           (keyup.enter)="navigateToEmployees()"
+           tabindex="0"
+           role="button">
         <div class="card-body">
           <h5 class="card-title mb-1">
             <i class="bi bi-people-fill me-2"></i>Mitarbeiter
@@ -18,7 +22,11 @@
       </div>
     </div>
     <div class="col-6">
-      <div class="card shadow-sm clickable-card" (click)="navigateToQualifications()">
+      <div class="card shadow-sm clickable-card"
+           (click)="navigateToQualifications()"
+           (keyup.enter)="navigateToQualifications()"
+           tabindex="0"
+           role="button">
         <div class="card-body">
           <h5 class="card-title mb-1">
             <i class="bi bi-mortarboard-fill me-2"></i>Qualifikationen

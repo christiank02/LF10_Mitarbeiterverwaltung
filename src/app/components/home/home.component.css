@@ -1,11 +1,21 @@
 .clickable-card {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  outline: none;
 }
 
 .clickable-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.clickable-card:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25), 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.clickable-card:active {
+  transform: translateY(0px);
 }
 
 .avatar-circle {
