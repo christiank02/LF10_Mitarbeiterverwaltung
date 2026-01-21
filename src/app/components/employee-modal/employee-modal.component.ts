@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {Employee, Skill} from '../../Employee';
@@ -18,6 +18,8 @@ export class EmployeeModalComponent implements OnChanges {
 
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<Employee>();
+
+  @ViewChild('firstNameInput') firstNameInput!: ElementRef;
 
   currentEmployee: Employee = {
     firstName: '',
@@ -56,6 +58,13 @@ export class EmployeeModalComponent implements OnChanges {
         skillSet: []
       };
       this.selectedQualificationToAdd = '';
+    }
+
+    // Fokus setzen wenn Modal geöffnet wird
+    if (changes['show'] && this.show) {
+      setTimeout(() => {
+        this.firstNameInput?.nativeElement?.focus();
+      }, 100);
     }
   }
 

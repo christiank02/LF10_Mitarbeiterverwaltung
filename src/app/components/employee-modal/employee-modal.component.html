@@ -14,13 +14,13 @@
           <div class="col-md-6">
             <label class="form-label">Vorname <span class="text-danger">*</span></label>
             <input
+              #firstNameInput
               type="text"
               class="form-control"
               [class.is-invalid]="hasError('firstName')"
               placeholder="Vorname"
               [(ngModel)]="currentEmployee.firstName"
               (blur)="validateField('firstName')"
-              autofocus
             />
             @if (hasError('firstName')) {
               <div class="invalid-feedback d-block">

@@ -12,13 +12,20 @@
         <div class="mb-3">
           <label class="form-label">Qualifikationsname <span class="text-danger">*</span></label>
           <input
+            #skillInput
             type="text"
             class="form-control"
+            [class.is-invalid]="hasError('skill')"
             placeholder="Qualifikationsname"
             [(ngModel)]="currentQualification.skill"
+            (blur)="validateField('skill')"
             (keyup.enter)="onSave()"
-            autofocus
           />
+          @if (hasError('skill')) {
+            <div class="invalid-feedback d-block">
+              {{ getError('skill') }}
+            </div>
+          }
         </div>
       </div>
       <div class="modal-footer">
