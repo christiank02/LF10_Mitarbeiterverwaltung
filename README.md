@@ -1,336 +1,74 @@
-# Starter für das LF10 Projekt - Angular
+# Mitarbeiterverwaltung – LF10
 
+Angular-Lernprojekt zur Verwaltung von Mitarbeitern und Qualifikationen, mit
+Detailansichten, OIDC-Anmeldung und einer Oberfläche zum Anlegen von Testdaten.
 
-## Requirements
+Das Repository enthält das Angular-Frontend und die lokale Infrastruktur.
+Das Backend wird als externes Docker-Image eingebunden und ist keine eigene
+Implementierung dieses Repositories.
 
-* Docker https://docs.docker.com/get-docker/
-* Docker compose (bei Windows und Mac schon in Docker enthalten) https://docs.docker.com/compose/install/
+## Voraussetzungen
 
+- Node.js 20.11.1+ aus der 20er-Reihe und npm (passend zu Angular 18).
+- Docker mit Docker Compose.
+- Freie Ports 4200, 5432, 8089, 9001 und 9443.
 
-### Abhängigkeiten starten (Postgres, EmployeeBackend)
-
-```bash
-docker compose up
-```
-
-Achtung: Der Docker-Container läuft dauerhaft! Wenn er nicht mehr benötigt wird, solltest du ihn stoppen.
-
-### Abhängigkeiten stoppen
+## Lokal starten
 
 ```bash
-docker compose down
-```
-
-### Postgres Datenbank wipen, z.B. bei Problemen
-
-```bash
-docker compose down
-docker volume rm docker_employee_postgres_data
-docker compose up
-```
-
-## Swagger des Backends
-
-```
-http://localhost:8089/swagger
-```
-
-### Anwendungsstart
-
-1. Docker-Container starten:
-```bash
-docker compose up
-```
-
-2. Authentik Admin-Interface öffnen: http://localhost:9000
-3. Mit Admin-Credentials einloggen (a@b.com / secret)
-4. Passwort für Benutzer "john" setzen:
-  - Navigiere zu Directory → Users
-  - Klicke auf den Benutzer "john"
-  - Setze ein Passwort (z.B. "test123")
-
-5. Angular-App starten:
-```bash
+npm ci
+docker compose up -d
 npm start
 ```
 
-6. Browser öffnen: http://localhost:4200
-7. Auf "Zur Anwendung" klicken
-8. Mit john und dem gesetzten Passwort einloggen
+| Dienst | Adresse |
+| --- | --- |
+| Angular-App | <http://localhost:4200> |
+| Backend / Swagger | <http://localhost:8089/swagger> |
+| Authentik | <http://localhost:9001> |
 
+Authentik wird am Host auf **9001** veröffentlicht; 9000 ist sein Container-Port.
+Die [Auth-Konfiguration](src/app/services/auth/auth.service.ts) verwendet deshalb
+`http://localhost:9001/application/o/employee_api/`.
 
-# Tutorial: OIDC-Authentifizierung mit Authentik integrieren
+Beim ersten Start richtet der Authentik-Worker den Provider über das
+[Blueprint](authentik_blueprints/zzz_employee_setup.yaml) ein. Falls die Anmeldung
+noch nicht funktioniert, zuerst `docker compose logs authentik-worker` prüfen
+und den Abschluss des Starts abwarten.
 
-In diesem Tutorial lernst du, wie du die OIDC-Authentifizierung (OpenID Connect) mit Authentik in deine Angular-Anwendung integrierst.
+Für die lokale Demo ist das Authentik-Administratorkonto `akadmin` mit der
+Bootstrap-E-Mail `a@b.com` und dem Passwort `secret` konfiguriert.
+Unter **Directory → Users** dem Demo-Benutzer `john` ein eigenes Testpasswort
+geben. Anschließend die Angular-App öffnen und die OIDC-Anmeldung durchführen.
+Die Zugangsdaten und Schlüssel in `compose.yml` sind ausschließlich Demo-Werte.
 
-## Schritt 1: Abhängigkeiten installieren
+Für manuelle API-Anfragen enthält [getBearerToken.http](getBearerToken.http)
+eine Vorlage für die VS-Code-Erweiterung REST Client. Ein eigenes, befristetes
+App-Passwort für `john` wird über `EMPLOYEE_APP_PASSWORD` übergeben; der
+Bearer-Token wird direkt aus der vorherigen Antwort gelesen. Passwörter und
+Tokens nicht in die Vorlage eintragen. Lokale `.env`-Dateien und private
+HTTP-Client-Konfigurationen sind von Git ausgeschlossen.
 
-Installiere die benötigte OAuth2-Bibliothek:
+## Projektaufbau
 
-```bash
-npm install angular-oauth2-oidc
-```
+- [src/app](src/app): Routen, Mitarbeiter- und Qualifikationsansichten, Dienste.
+- [app.routes.ts](src/app/app.routes.ts): geschützte Ansichten und Login-Callback.
+- [compose.yml](compose.yml): Backend, Datenbanken, Redis und Authentik.
+- [authentik_blueprints](authentik_blueprints): Provider- und Benutzerkonfiguration.
 
-## Schritt 2: OAuth-Client in der App-Konfiguration bereitstellen
-
-Öffne `src/app/app.config.ts` und füge den `provideOAuthClient()` zu den Providers hinzu:
-
-```typescript
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-import { provideOAuthClient } from 'angular-oauth2-oidc';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),
-    provideOAuthClient()  // <-- NEU
-  ]
-};
-```
-
-## Schritt 3: AuthService erstellen
-
-Erstelle einen neuen Service `src/app/auth.service.ts`:
+## Prüfen und stoppen
 
 ```bash
-ng generate service auth
+npm run build
+npm test
+docker compose down
 ```
 
-Implementiere den AuthService mit folgender Logik:
+Die Tests verwenden Karma und benötigen einen Browser. `docker compose down`
+behält Datenbank-Volumes. Ein kompletter lokaler Reset ist mit
+`docker compose down --volumes` möglich, löscht aber **alle Daten dieser
+Compose-Umgebung**, einschließlich der Authentik-Einrichtung.
 
-```typescript
-import { Injectable } from '@angular/core';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { Router } from '@angular/router';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthService {
-  private authConfig: AuthConfig = {
-    issuer: 'http://localhost:9000/application/o/employee_api/',
-    clientId: 'employee_api_client',
-    redirectUri: window.location.origin + '/callback',
-    responseType: 'code',
-    scope: 'openid profile email offline_access',
-    showDebugInformation: true,
-    requireHttps: false,
-    postLogoutRedirectUri: window.location.origin,
-    strictDiscoveryDocumentValidation: false,  // Wichtig für Authentik!
-  };
-
-  private configurePromise: Promise<void>;
-
-  constructor(
-    private oauthService: OAuthService,
-    private router: Router
-  ) {
-    this.configurePromise = this.configure();
-  }
-
-  private async configure() {
-    this.oauthService.configure(this.authConfig);
-
-    try {
-      // Discovery-Dokument laden
-      await this.oauthService.loadDiscoveryDocument();
-
-      // Authentik gibt die Endpoints als Arrays zurück, wir müssen sie normalisieren
-      const discoveryDoc = (this.oauthService as any).discoveryDocument;
-      if (discoveryDoc) {
-        const endpointFields = [
-          'authorization_endpoint',
-          'token_endpoint',
-          'userinfo_endpoint',
-          'jwks_uri',
-          'end_session_endpoint',
-          'revocation_endpoint',
-          'introspection_endpoint'
-        ];
-
-        endpointFields.forEach(field => {
-          if (Array.isArray(discoveryDoc[field]) && discoveryDoc[field].length > 0) {
-            discoveryDoc[field] = discoveryDoc[field][0];
-          }
-        });
-
-        (this.oauthService as any).discoveryDocument = discoveryDoc;
-      }
-
-      this.oauthService.setupAutomaticSilentRefresh();
-    } catch (error) {
-      console.error('Fehler beim Laden des Discovery-Dokuments:', error);
-    }
-  }
-
-  public async handleCallback(): Promise<boolean> {
-    try {
-      await this.configurePromise;
-      await this.oauthService.tryLogin();
-      return this.hasValidToken();
-    } catch (error) {
-      console.error('Fehler beim Login-Callback:', error);
-      return false;
-    }
-  }
-
-  public async login() {
-    await this.configurePromise;
-    this.oauthService.initCodeFlow();
-  }
-
-  public logout() {
-    this.oauthService.logOut();
-  }
-
-  public hasValidToken(): boolean {
-    return this.oauthService.hasValidAccessToken();
-  }
-
-  public getAccessToken(): string {
-    return this.oauthService.getAccessToken();
-  }
-}
-```
-
-**Wichtige Hinweise:**
-- `strictDiscoveryDocumentValidation: false` ist notwendig, weil Authentik einige Endpoints als Arrays zurückgibt
-- Die Normalisierung der Discovery-Document-Endpoints ist erforderlich
-- `configurePromise` stellt sicher, dass das Discovery-Dokument geladen ist, bevor Login-Operationen durchgeführt werden
-
-## Schritt 4: Callback-Komponente erstellen
-
-Erstelle eine Callback-Komponente für die Rückleitung nach dem Login:
-
-```bash
-ng generate component callback
-```
-
-Implementiere `src/app/callback/callback.component.ts`:
-
-```typescript
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
-
-@Component({
-  selector: 'app-callback',
-  standalone: true,
-  template: '<p>Processing login...</p>',
-})
-export class CallbackComponent implements OnInit {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
-  async ngOnInit() {
-    const success = await this.authService.handleCallback();
-    
-    if (success) {
-      this.router.navigate(['/employees']);
-    } else {
-      this.router.navigate(['/']);
-    }
-  }
-}
-```
-
-## Schritt 5: Auth Guard erstellen
-
-Erstelle einen Guard, um Routen zu schützen:
-
-```bash
-ng generate guard auth
-```
-
-Wähle "CanActivate" aus und implementiere `src/app/auth.guard.ts`:
-
-```typescript
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from './auth.service';
-
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  if (authService.hasValidToken()) {
-    return true;
-  } else {
-    authService.login();
-    return false;
-  }
-};
-```
-
-## Schritt 6: Routen konfigurieren
-
-Füge die Callback-Route hinzu und schütze die Employee-Route mit dem Guard in `src/app/app.routes.ts`:
-
-```typescript
-import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { EmployeeListComponent } from './employee-list/employee-list.component';
-import { CallbackComponent } from './callback/callback.component';
-import { authGuard } from './auth.guard';
-
-export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'callback', component: CallbackComponent },
-  { path: 'employees', component: EmployeeListComponent, canActivate: [authGuard] },
-  { path: '**', redirectTo: '' }
-];
-```
-
-## Schritt 7: Employee-List-Komponente anpassen
-
-Füge den Access Token zu den HTTP-Requests hinzu:
-
-```typescript
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Observable, of } from "rxjs";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Employee } from "../Employee";
-import { AuthService } from "../auth.service";
-
-@Component({
-  selector: 'app-employee-list',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './employee-list.component.html',
-  styleUrl: './employee-list.component.css'
-})
-export class EmployeeListComponent {
-  employees$: Observable<Employee[]>;
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {
-    this.employees$ = of([]);
-    this.fetchData();
-  }
-
-  fetchData() {
-    const token = this.authService.getAccessToken();
-    this.employees$ = this.http.get<Employee[]>('http://localhost:8089/employees', {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-    });
-  }
-
- 
-}
-```
-
-
-# Bugs
-
-Trage hier die Features ein, die nicht funktionieren. Beschreibe den jeweiligen Fehler. 
-
+Das Projekt ist für Lernen und lokale Demonstrationen gedacht. Das ältere
+Framework, die externen Container und die Auth-Konfiguration benötigen vor
+einem öffentlichen Betrieb eine gesonderte Aktualisierung und Prüfung.
