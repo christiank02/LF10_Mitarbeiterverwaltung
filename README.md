@@ -40,7 +40,14 @@ Für die lokale Demo ist das Authentik-Administratorkonto `akadmin` mit der
 Bootstrap-E-Mail `a@b.com` und dem Passwort `secret` konfiguriert.
 Unter **Directory → Users** dem Demo-Benutzer `john` ein eigenes Testpasswort
 geben. Anschließend die Angular-App öffnen und die OIDC-Anmeldung durchführen.
-Die eingecheckten Zugangsdaten und Schlüssel sind ausschließlich Demo-Werte.
+Die Zugangsdaten und Schlüssel in `compose.yml` sind ausschließlich Demo-Werte.
+
+Für manuelle API-Anfragen enthält [getBearerToken.http](getBearerToken.http)
+eine Vorlage für die VS-Code-Erweiterung REST Client. Ein eigenes, befristetes
+App-Passwort für `john` wird über `EMPLOYEE_APP_PASSWORD` übergeben; der
+Bearer-Token wird direkt aus der vorherigen Antwort gelesen. Passwörter und
+Tokens nicht in die Vorlage eintragen. Lokale `.env`-Dateien und private
+HTTP-Client-Konfigurationen sind von Git ausgeschlossen.
 
 ## Projektaufbau
 

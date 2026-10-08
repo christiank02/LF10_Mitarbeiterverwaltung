@@ -40,3 +40,11 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Local credentials and HTTP-client overrides
+.env
+.env.*
+!.env.example
+!.env.template
+http-client.private.env.json
+*.local.http
